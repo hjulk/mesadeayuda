@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
-class loginController extends Controller
-{
+class loginController extends Controller{
 
     public function index()
     {
@@ -174,20 +173,8 @@ class loginController extends Controller
             return redirect('/crearSolicitud')->withErrors($validator)->withInput();
         }else{
 
-        $data = Request::all();
-        $reglas = array(
-            'user'                  => 'required',
-            'password'              => 'required',
-            'g-recaptcha-response' => 'required|captcha'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $Usuario    = Request::get('user');
-            $Password   = Request::get('password');
+            $Usuario    = $request->user;
+            $Password   = $request->password;
             $clave      = hash('sha512', $Password);
 
             $consultarUsuario = Usuarios::BuscarUserFinal($Usuario);
@@ -281,16 +268,12 @@ class loginController extends Controller
                 // return \Response::json(['valido'=>'false','errors'=>$verrors]);
                 return redirect('/crearSolicitud')->withErrors(['errors' => $verrors]);
             }
-        }else{
-            return redirect('/crearSolicitud')->withErrors(['errors' => $verrors]);
-            // return \Response::json(['valido'=>'false','errors'=>$verrors]);
         }
     }
 
-    public function RecuperarContrasena(){
-        $data = Request::all();
-        $UserName = Request::get('username');
-        $UserEmail = Request::get('correo');
+    public function RecuperarContrasena(Request $request){
+        $UserName    = $request->username;
+        $UserEmail   = $request->correo;
 
         if(!empty($UserName) || !empty($UserEmail)){
 
@@ -424,10 +407,9 @@ class loginController extends Controller
         }
     }
 
-    public function RecuperarContrasenaUsuario(){
-        $data = Request::all();
-        $UserName = Request::get('username');
-        $UserEmail = Request::get('correo');
+    public function RecuperarContrasenaUsuario(Request $request){
+        $UserName    = $request->username;
+        $UserEmail   = $request->correo;
 
         if(!empty($UserName) || !empty($UserEmail)){
 
@@ -561,8 +543,7 @@ class loginController extends Controller
         }
     }
 
-    public function dashboardMonitoreo()
-    {
+    public function dashboardMonitoreo(){
         setlocale(LC_ALL, 'es_CO');
         $EnDesarrollo   = Tickets::EnDesarrollo();
         foreach($EnDesarrollo as $valor){
