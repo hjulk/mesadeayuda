@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Models\Admin\Sedes;
 use App\Models\Helpdesk\Tickets;
 use App\Models\Admin\Roles;
@@ -16,25 +16,26 @@ use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 
 class TicketsController extends Controller
 {
 
-    public function crearTicket(){
-        $data = Request::all();
+    public function crearTicket(Request $request){
         $creadoPor          = (int)Session::get('IdUsuario');
         $buscarUsuario = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = TicketsController::BuscarURL($Administrador);
-        $seleccionado = (int)Request::get('id_usuario');
-        if($seleccionado === '0'){
+        $seleccionado = (int)$request->id_usuario;
+        if($seleccionado === ''){
             $verrors = array();
             array_push($verrors, 'Debe seleccionar un usuario a asignar el ticket');
             return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
         }
-        $reglas = array(
+
+        $validator = Validator::make($request->all(), [
             'kind_id'           =>  'required',
             'title'             =>  'required',
             'description'       =>  'required',
@@ -49,32 +50,30 @@ class TicketsController extends Controller
             'id_estado'         =>  'required',
             'evidencia'         =>  'max:5120',
             'area'              =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
+        ]);
 
-            $idTipo             = (int)Request::get('kind_id');
-            $Asunto             = TicketsController::eliminar_tildes_texto(Request::get('title'));
-            $Descripcion        = TicketsController::eliminar_tildes_texto(Request::get('description'));
-            $NombreUsuario      = TicketsController::eliminar_tildes_texto(Request::get('nombre_usuario'));
-            $TelefonoUsuario    = Request::get('telefono_usuario');
-            $CorreUsuario       = TicketsController::editar_correo(Request::get('correo_usuario'));
-            $IdSede             = (int)Request::get('project_id');
-            $IdArea             = (int)Request::get('area');
+        if ($validator->fails()) {
+            return redirect($url.'/tickets')->withErrors($validator)->withInput();
+        }else{
+
+            $idTipo             = (int)$request->kind_id;
+            $Asunto             = TicketsController::eliminar_tildes_texto($request->title);
+            $Descripcion        = TicketsController::eliminar_tildes_texto($request->description);
+            $NombreUsuario      = TicketsController::eliminar_tildes_texto($request->nombre_usuario);
+            $TelefonoUsuario    = $request->telefono_usuario;
+            $CorreUsuario       = TicketsController::editar_correo($request->correo_usuario);
+            $IdSede             = (int)$request->project_id;
+            $IdArea             = (int)$request->area;
             $BuscarArea         = Sedes::BuscarAreaId($IdArea);
             foreach($BuscarArea as $row){
                 $Area           = $row->name;
             }
-            // $Area               = Request::get('dependencia');
-            $Prioridad          = (int)Request::get('priority_id');
-            $Categoria          = (int)Request::get('id_categoria');
-            $AsignadoA          = (int)Request::get('id_usuario');
-            $Estado             = (int)Request::get('id_estado');
-            $creadoPor          = (int)Session::get('IdUsuario');
+            // $Area               = $request->dependencia');
+            $Prioridad          = (int)$request->priority_id;
+            $Categoria          = (int)$request->id_categoria;
+            $AsignadoA          = (int)$request->id_usuario;
+            $Estado             = (int)$request->id_estado;
+            $creadoPor          = (int)$request->IdUsuario;
 
             $nombreCategoria    = Tickets::Categoria($Categoria);
             $nombrePrioridad    = Tickets::Prioridad($Prioridad);
@@ -107,8 +106,8 @@ class TicketsController extends Controller
                 Tickets::CrearTicketAsignado($ticket,$Asunto,$Descripcion,$creadoPor,$AsignadoA);
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia')) {
-                    $files = Request::file('evidencia');
+                if ($request->hasFile('evidencia')) {
+                    $files = $request->file('evidencia');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias';
                         $extension          = $file->getClientOriginalExtension();
@@ -189,12 +188,10 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al crear el ticket');
                 return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizarTicket(){
+    public function actualizarTicket(Request $request){
         $data               = Request::all();
         $creadoPor          = (int)Session::get('IdUsuario');
         $buscarUsuario      = Usuarios::BuscarNombre($creadoPor);
@@ -202,42 +199,40 @@ class TicketsController extends Controller
             $Administrador  = (int)$value->rol_id;
         }
         $url = TicketsController::BuscarURL($Administrador);
-        $seleccionado = (int)Request::get('id_usuarioupd');
+        $seleccionado = (int)$request->id_usuarioupd;
         if($seleccionado === 0){
             $verrors = array();
             array_push($verrors, 'Debe seleccionar un usuario a asignar el ticket');
             return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
         }
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'id_prioridad_upd'      =>  'required',
             'id_categoriaupd'       =>  'required',
             'id_usuarioupd'         =>  'required',
             'id_estado_upd'         =>  'required',
             'comentario'            =>  'required',
             'evidencia_upd'         =>  'max:5120'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
+        ]);
 
-            $idTicket           = (int)Request::get('idT');
-            $idTipo             = (int)Request::get('id_tipo_upd');
-            $Asunto             = TicketsController::eliminar_tildes_texto(Request::get('asunto_upd'));
-            $Descripcion        = TicketsController::eliminar_tildes_texto(Request::get('descripcion_upd'));
-            $NombreUsuario      = TicketsController::eliminar_tildes_texto(Request::get('nombre_usuario_upd'));
-            $TelefonoUsuario    = Request::get('telefono_usuario_upd');
-            $CorreUsuario       = TicketsController::editar_correo(Request::get('correo_usuario_upd'));
-            $IdSede             = (int)Request::get('id_sede_upd');
-            $IdArea             = Request::get('dependencia_upd');
-            $Prioridad          = (int)Request::get('id_prioridad_upd');
-            $Categoria          = (int)Request::get('id_categoriaupd');
-            $AsignadoA          = (int)Request::get('id_usuarioupd');
-            $Estado             = (int)Request::get('id_estado_upd');
+        if ($validator->fails()) {
+            return redirect($url.'/tickets')->withErrors($validator)->withInput();
+        }else{
+
+            $idTicket           = (int)$request->idT;
+            $idTipo             = (int)$request->id_tipo_upd;
+            $Asunto             = TicketsController::eliminar_tildes_texto($request->asunto_upd);
+            $Descripcion        = TicketsController::eliminar_tildes_texto($request->descripcion_upd);
+            $NombreUsuario      = TicketsController::eliminar_tildes_texto($request->nombre_usuario_upd);
+            $TelefonoUsuario    = $request->telefono_usuario_upd;
+            $CorreUsuario       = TicketsController::editar_correo($request->correo_usuario_upd);
+            $IdSede             = (int)$request->id_sede_upd;
+            $IdArea             = $request->dependencia_upd;
+            $Prioridad          = (int)$request->id_prioridad_upd;
+            $Categoria          = (int)$request->id_categoriaupd;
+            $AsignadoA          = (int)$request->id_usuarioupd;
+            $Estado             = (int)$request->id_estado_upd;
             $creadoPor          = (int)Session::get('IdUsuario');
-            $comentario         = Request::get('comentario');
+            $comentario         = $request->comentario;
 
             $nombreCategoria    = Tickets::Categoria($Categoria);
             $nombrePrioridad    = Tickets::Prioridad($Prioridad);
@@ -340,8 +335,6 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el ticket');
                 return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
@@ -412,29 +405,26 @@ class TicketsController extends Controller
                                         'Sede' => $NombreSedes, 'Area' =>$NombreAreas,'FechaInicio' => null,'FechaFin' => null]);
     }
 
-    public function consultarTickets(){
-        $data = Request::all();
-        $reglas = array(
+    public function consultarTickets(Request $request){
+        $validator = Validator::make($request->all(), [
             'fechaInicio'   =>  'required',
             'fechaFin'      =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $idTipo         = Request::get('id_tipo');
-            $idCategoria    = Request::get('id_categoria');
-            $idUsuarioC     = Request::get('id_creado');
-            $idUsuarioA     = Request::get('id_asignado');
-            $idPrioridad    = Request::get('id_prioridad');
-            $idEstado       = Request::get('id_estado');
-            $idZona         = Request::get('id_zona');
-            $idSede         = Request::get('id_sede');
-            $idArea         = Request::get('id_area');
-            $finicio        = Request::get('fechaInicio');
-            $ffin           = Request::get('fechaFin');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/reporteTickets')->withErrors($validator)->withInput();
+        }else{
+            $idTipo         = $request->id_tipo;
+            $idCategoria    = $request->id_categoria;
+            $idUsuarioC     = $request->id_creado;
+            $idUsuarioA     = $request->id_asignado;
+            $idPrioridad    = $request->id_prioridad;
+            $idEstado       = $request->id_estado;
+            $idZona         = $request->id_zona;
+            $idSede         = $request->id_sede;
+            $idArea         = $request->id_area;
+            $finicio        = $request->fechaInicio;
+            $ffin           = $request->fechaFin;
             $consultaReporte = Tickets::Reporte($idTipo,$idCategoria,$idUsuarioC,$idUsuarioA,$idPrioridad,$idEstado,$idZona,$idSede,$idArea,$finicio,$ffin);
 
             $resultado = json_decode(json_encode($consultaReporte), true);
@@ -526,32 +516,26 @@ class TicketsController extends Controller
             if(empty($consultaReporte)){
                 $verrors = array();
                 array_push($verrors, 'No hay datos que mostrar');
-                return \Response::json(['valido'=>'false','errors'=>$verrors]);
+                return Response::json(['valido'=>'false','errors'=>$verrors]);
             }else if(!empty($aResultado)){
-                return \Response::json(['valido'=>'true','results'=>$aResultado]);
+                return Response::json(['valido'=>'true','results'=>$aResultado]);
             }else{
                 $verrors = array();
                 array_push($verrors, 'No hay datos que mostrar');
-                return \Response::json(['valido'=>'false','errors'=>$verrors]);
+                return Response::json(['valido'=>'false','errors'=>$verrors]);
             }
-
-
-            // return \Response::json(array('valido'=>'true'));
-        }else{
-            return \Response::json(['valido'=>'false','errors'=>$verrors]);
         }
 
     }
 
-    public function crearTicketUsuario(){
-        $data           = Request::all();
+    public function crearTicketUsuario(Request $request){
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = TicketsController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombres'           =>  'required',
             'identificacion'    =>  'required',
             'cargo'             =>  'required',
@@ -564,34 +548,34 @@ class TicketsController extends Controller
             'estado'            =>  'required',
             'prioridad'         =>  'required',
             'area'              =>  'required'
-        );
-        $validador  = Validator::make($data, $reglas);
-        $messages   = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($url.'/ticketsUsuario')->withErrors($validator)->withInput();
+        }else{
+
+
             $Redes = 0;
             $Infraestructura = 0;
             $Aplicaciones = 0;
-            $Nombres                = TicketsController::eliminar_tildes_texto(Request::get('nombres'));
-            $Identificacion         = Request::get('identificacion');
-            $Cargo                  = TicketsController::eliminar_tildes_texto(Request::get('cargo'));
-            $Sede                   = (int)Request::get('sede');
+            $Nombres                = TicketsController::eliminar_tildes_texto($request->nombres);
+            $Identificacion         = $request->identificacion;
+            $Cargo                  = TicketsController::eliminar_tildes_texto($request->cargo);
+            $Sede                   = (int)$request->sede;
             $BuscarSede             = Sedes::BuscarSedeID($Sede);
             foreach($BuscarSede as $value){
                 $NombreSede = $value->name;
             }
-            $IdArea                 = (int)Request::get('area');
+            $IdArea                 = (int)$request->area;
             $BuscarArea             = Sedes::BuscarAreaId($IdArea);
             foreach($BuscarArea as $row){
                 $Area               = $row->name;
             }
-            // $Area                   = Request::get('area');
-            $Jefe                   = Request::get('jefe');
-            $FechaIngreso           = date('Y-m-d H:i:s', strtotime(Request::get('fechaIngreso')));
-            $CorreoS                = Request::get('correoS');
-            $CargoNuevo             = (int)Request::get('cargo_nuevo');
+            // $Area                   = $request->area;
+            $Jefe                   = $request->jefe;
+            $FechaIngreso           = date('Y-m-d H:i:s', strtotime($request->fechaIngreso));
+            $CorreoS                = $request->correoS;
+            $CargoNuevo             = (int)$request->cargo_nuevo;
             if($CargoNuevo === 1){
                 $CargoNuevo_desc = 'Sí';
                 $Infraestructura++;
@@ -599,13 +583,13 @@ class TicketsController extends Controller
                 $CargoNuevo_desc = 'No';
                 $Infraestructura++;
             }
-            if(Request::get('funcionario')){
-                $Funcionario            = Request::get('funcionario');
+            if($request->funcionario){
+                $Funcionario            = $request->funcionario;
             }else{
                 $Funcionario = 'SIN FUNCIONARIO';
             }
-            if(Request::get('usuario_dominio')){
-                $UsuarioDominio     = (int)Request::get('usuario_dominio');
+            if($request->usuario_dominio){
+                $UsuarioDominio     = (int)$request->usuario_dominio;
                 if($UsuarioDominio === 1){
                     $Infraestructura++;
                     $UsuarioDominio_desc = 'Sí';
@@ -614,8 +598,8 @@ class TicketsController extends Controller
                 $UsuarioDominio     = 0;
                 $UsuarioDominio_desc = 'No';
             }
-            if(Request::get('correo_electronico')){
-                $CorreoElectronico   = (int)Request::get('correo_electronico');
+            if($request->correo_electronico){
+                $CorreoElectronico   = (int)$request->correo_electronico;
                 if($CorreoElectronico === 1){
                     $Infraestructura++;
                     $CorreoElectronico_desc   = 'Sí';
@@ -625,13 +609,13 @@ class TicketsController extends Controller
                 $CorreoElectronico_desc = 'No';
             }
 
-            if(Request::get('correo_funcionario')){
-                $CorreoFuncionario      = TicketsController::editar_correo(Request::get('correo_funcionario'));
+            if($request->correo_funcionario){
+                $CorreoFuncionario      = TicketsController::editar_correo($request->correo_funcionario);
             }else{
                 $CorreoFuncionario      = 'SIN CORREO';
             }
-            if(Request::get('equipo_computo')){
-                $EquipoComputo      = (int)Request::get('equipo_computo');
+            if($request->equipo_computo){
+                $EquipoComputo      = (int)$request->equipo_computo;
                 if($EquipoComputo === 1){
                     $Infraestructura++;
                     $EquipoComputo_desc = 'Portatil';
@@ -644,13 +628,13 @@ class TicketsController extends Controller
                 $EquipoComputo_desc = 'No';
             }
 
-            if(Request::get('acceso_carpeta')){
-                $AccesoCarpeta          = Request::get('acceso_carpeta');
+            if($request->acceso_carpeta){
+                $AccesoCarpeta          = $request->acceso_carpeta;
             }else{
                 $AccesoCarpeta          = 'SIN CARPETA';
             }
-            if(Request::get('celular')){
-                $Celular            = (int)Request::get('celular');
+            if($request->celular){
+                $Celular            = (int)$request->celular;
                 if($Celular === 1){
                     $Redes++;
                     $Celular_desc = 'Sí';
@@ -659,8 +643,8 @@ class TicketsController extends Controller
                 $Celular            = 0;
                 $Celular_desc       = 'No';
             }
-            if(Request::get('datos')){
-                $Datos              = (int)Request::get('datos');
+            if($request->datos){
+                $Datos              = (int)$request->datos;
                 if($Datos === 1){
                     $Redes++;
                     $Datos_desc = 'Sí';
@@ -669,8 +653,8 @@ class TicketsController extends Controller
                 $Datos              = 0;
                 $Datos_desc         = 'No';
             }
-            if(Request::get('minutos')){
-                $Minutos            = (int)Request::get('minutos');
+            if($request->minutos){
+                $Minutos            = (int)$request->minutos;
                 if($Minutos === 1){
                     $Redes++;
                     $Minutos_desc = 'Sí';
@@ -679,8 +663,8 @@ class TicketsController extends Controller
                 $Minutos            = 0;
                 $Minutos_desc       = 'No';
             }
-            if(Request::get('extension_tel')){
-                $ExtensionTel       = (int)Request::get('extension_tel');
+            if($request->extension_tel){
+                $ExtensionTel       = (int)$request->extension_tel;
                 if($ExtensionTel === 1){
                     $Redes++;
                     $ExtensionTel_desc = 'Sí';
@@ -689,8 +673,8 @@ class TicketsController extends Controller
                 $ExtensionTel       = 0;
                 $ExtensionTel_desc  = 'No';
             }
-            if(Request::get('conectividad')){
-                $Conectividad       = (int)Request::get('conectividad');
+            if($request->conectividad){
+                $Conectividad       = (int)$request->conectividad;
                 if($Conectividad === 1){
                     $Redes++;
                     $Conectividad_desc = 'Sí';
@@ -699,8 +683,8 @@ class TicketsController extends Controller
                 $Conectividad       = 0;
                 $Conectividad_desc  = 'No';
             }
-            if(Request::get('acceso_internet')){
-                $AccesoInternet     = (int)Request::get('acceso_internet');
+            if($request->acceso_internet){
+                $AccesoInternet     = (int)$request->acceso_internet;
                 switch($AccesoInternet){
                     Case 1  :   $AccesoInternet_desc = 'Básico';
                                 $Redes++;
@@ -722,8 +706,8 @@ class TicketsController extends Controller
                 $AccesoInternet         = 0;
                 $AccesoInternet_desc    = 'No';
             }
-            if(Request::get('app_85')){
-                $App85              = (int)Request::get('app_85');
+            if($request->app_85){
+                $App85              = (int)$request->app_85;
                 if($App85 === 1){
                     $Aplicaciones++;
                     $App85_desc = 'Sí';
@@ -732,8 +716,8 @@ class TicketsController extends Controller
                 $App85              = 0;
                 $App85_desc = 'No';
             }
-            if(Request::get('app_dinamica')){
-                $AppDinamica        = (int)Request::get('app_dinamica');
+            if($request->app_dinamica){
+                $AppDinamica        = (int)$request->app_dinamica;
                 if($AppDinamica === 1){
                     $Aplicaciones++;
                     $AppDinamica_desc = 'Sí';
@@ -742,14 +726,14 @@ class TicketsController extends Controller
                 $AppDinamica        = 0;
                 $AppDinamica_desc   = 'No';
             }
-            if(Request::get('otro_aplicativo')){
-                $OtroAplicativo     = Request::get('otro_aplicativo');
+            if($request->otro_aplicativo){
+                $OtroAplicativo     = $request->otro_aplicativo;
                 $Aplicaciones++;
             }else{
                 $OtroAplicativo     = 'NINGUNO';
             }
-            if(Request::get('cap_85')){
-                $Cap85              = (int)Request::get('cap_85');
+            if($request->cap_85){
+                $Cap85              = (int)$request->cap_85;
                 if($Cap85 === 1){
                     $Aplicaciones++;
                     $Cap85_desc = 'Sí';
@@ -758,8 +742,8 @@ class TicketsController extends Controller
                 $Cap85              = 0;
                 $Cap85_desc         = 'No';
             }
-            if(Request::get('cap_dinamica')){
-                $CapDinamica        = (int)Request::get('cap_dinamica');
+            if($request->cap_dinamica){
+                $CapDinamica        = (int)$request->cap_dinamica;
                 if($CapDinamica === 1){
                     $Aplicaciones++;
                     $CapDinamica_desc = 'Sí';
@@ -768,9 +752,9 @@ class TicketsController extends Controller
                 $CapDinamica        = 0;
                 $CapDinamica_desc = 'No';
             }
-            $Observaciones          = Request::get('observaciones');
-            $Estado                 = (int)Request::get('estado');
-            $Prioridad              = (int)Request::get('prioridad');
+            $Observaciones          = $request->observaciones;
+            $Estado                 = (int)$request->estado;
+            $Prioridad              = (int)$request->prioridad;
             $nombrePrioridad        = Tickets::Prioridad($Prioridad);
             $nombreEstado           = Tickets::Estado($Estado);
             foreach($nombrePrioridad as $row){
@@ -993,12 +977,10 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al crear el ticket');
                 return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/ticketsUsuario')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function crearTicketRecurrente(){
+    public function crearTicketRecurrente(Request $request){
         $data           = Request::all();
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
@@ -1006,22 +988,21 @@ class TicketsController extends Controller
             $Administrador = (int)$value->rol_id;
         }
         $url = TicketsController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'asunto'        =>  'required',
             'categoria'     =>  'required',
             'prioridad'     =>  'required',
             'tipo_usuario'  =>  'required'
-        );
-        $validador  = Validator::make($data, $reglas);
-        $messages   = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $Asunto     = TicketsController::eliminar_tildes_texto(Request::get('asunto'));
-            $Categoria  = (int)Request::get('categoria');
-            $Prioridad  = (int)Request::get('prioridad');
-            $Tipo       = (int)Request::get('tipo_usuario');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($url.'/ticketsRecurrentes')->withErrors($validator)->withInput();
+        }else{
+
+            $Asunto     = TicketsController::eliminar_tildes_texto($request->asunto);
+            $Categoria  = (int)$request->categoria;
+            $Prioridad  = (int)$request->prioridad;
+            $Tipo       = (int)$request->tipo_usuario;
             $CrearRecurrente    = Tickets::CrearRecurrente($Asunto,$Categoria,$Prioridad,$creadoPor,$Tipo);
             if($CrearRecurrente){
                 $verrors = 'Se creo con éxito el asunto';
@@ -1031,12 +1012,10 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al crear el asunto');
                 return Redirect::to($url.'/ticketsRecurrentes')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/ticketsRecurrentes')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizarTicketRecurrente(){
+    public function actualizarTicketRecurrente(Request $request){
         $data           = Request::all();
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
@@ -1044,25 +1023,24 @@ class TicketsController extends Controller
             $Administrador = (int)$value->rol_id;
         }
         $url = TicketsController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'asunto_upd'        =>  'required',
             'categoria_upd'     =>  'required',
             'prioridad_upd'     =>  'required',
             'activo'            =>  'required',
             'tipo_usuario_upd'  =>  'required'
-        );
-        $validador  = Validator::make($data, $reglas);
-        $messages   = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $Asunto     = Request::get('asunto_upd');
-            $Categoria  = (int)Request::get('categoria_upd');
-            $Prioridad  = (int)Request::get('prioridad_upd');
-            $IdTicket   = (int)Request::get('idT');
-            $Activo     = (int)Request::get('activo');
-            $Tipo       = (int)Request::get('tipo_usuario_upd');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect($url.'/ticketsRecurrentes')->withErrors($validator)->withInput();
+        }else{
+
+            $Asunto     = $request->asunto_upd;
+            $Categoria  = (int)$request->categoria_upd;
+            $Prioridad  = (int)$request->prioridad_upd;
+            $IdTicket   = (int)$request->idT;
+            $Activo     = (int)$request->activo;
+            $Tipo       = (int)$request->tipo_usuario_upd;
             $ActualizarRecurrente   = Tickets::ActualizarRecurrente($Asunto,$Categoria,$Prioridad,$creadoPor,$IdTicket,$Activo,$Tipo);
             if($ActualizarRecurrente){
                 $verrors = 'Se actualizó con éxito el asunto';
@@ -1072,8 +1050,6 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el asunto');
                 return Redirect::to($url.'/ticketsRecurrentes')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/ticketsRecurrentes')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
@@ -1227,11 +1203,11 @@ class TicketsController extends Controller
         $id   = Request::get('id_categoria');
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
-        // $NombreUsuario[0] = 'Seleccione: ';
+        $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = $row->name;
+            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
-        return \Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
     }
 
@@ -1241,11 +1217,11 @@ class TicketsController extends Controller
         $id   = Request::get('id_categoria');
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
-        // $NombreUsuario[0] = 'Seleccione: ';
+        $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = $row->nombre;
+            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->nombre);
         }
-        return \Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
     }
 
@@ -1255,11 +1231,11 @@ class TicketsController extends Controller
         $id   = Request::get('id_categoria');
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
-        // $NombreUsuario[0] = 'Seleccione: ';
+        $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = $row->name;
+            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
-        return \Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
     }
 
@@ -1269,11 +1245,11 @@ class TicketsController extends Controller
         $id   = Request::get('id_categoria');
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
-        // $NombreUsuario[''] = 'Seleccione: ';
+        $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = $row->name;
+            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
-        return \Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
     }
 
@@ -1282,11 +1258,11 @@ class TicketsController extends Controller
         $id   = Request::get('id_sede');
         $NombreUsuario = array();
         $buscarUsuario = Sedes::BuscarAreaIdSede($id);
-        // $NombreUsuario[0] = 'Seleccione: ';
+        $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = $row->name;
+            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
-        return \Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
     }
 
     public function crearSolicitud(){
@@ -1330,10 +1306,8 @@ class TicketsController extends Controller
                                         'Areas' => $NombreArea,'Asuntos' => $Asuntos]);
     }
 
-    public function nuevaSolicitud(){
-        $data = Request::all();
-        // dd(Request::get('asunto'));
-        $reglas = array(
+    public function nuevaSolicitud(Request $request){
+        $validator = Validator::make($request->all(), [
             'kind_id'           => 'required',
             'nombre_usuario'    => 'required',
             'description'       => 'required',
@@ -1341,32 +1315,30 @@ class TicketsController extends Controller
             'correo_usuario'    => 'required',
             'project_id'        => 'required',
             'area'              => 'required'
+        ]);
 
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $idTipo             = (int)Request::get('kind_id');
+        if ($validator->fails()) {
+            return redirect('/crearSolicitud')->withErrors($validator)->withInput();
+        }else{
 
-            $Descripcion        = Request::get('description');
-            $NombreUsuario      = Request::get('nombre_usuario');
-            $TelefonoUsuario    = Request::get('telefono_usuario');
-            $CorreUsuario       = Request::get('correo_usuario');
-            $IdSede             = (int)Request::get('project_id');
-            $IdArea             = (int)Request::get('area');
+            $idTipo             = (int)$request->kind_id;
+
+            $Descripcion        = TicketsController::eliminar_tildes_texto($request->description);
+            $NombreUsuario      = $request->nombre_usuario;
+            $TelefonoUsuario    = $request->telefono_usuario;
+            $CorreUsuario       = $request->correo_usuario;
+            $IdSede             = (int)$request->project_id;
+            $IdArea             = (int)$request->area;
             $BuscarArea         = Sedes::BuscarAreaId($IdArea);
             foreach($BuscarArea as $row){
                 $Area           = $row->name;
             }
-            // $Area               = Request::get('dependencia');
-            $idAsunto           = (int)Request::get('asunto');
+            // $Area               = $request->dependencia');
+            $idAsunto           = (int)$request->asunto;
             if($idAsunto === 1){
                 $Prioridad      = 2;
                 $Categoria      = 4;
-                $Asunto         = Request::get('title');
+                $Asunto         = TicketsController::eliminar_tildes_texto($request->title);
             }else{
                 $buscardatos = Tickets::ListarRecurrentesId($idAsunto);
                 if($buscardatos){
@@ -1378,7 +1350,7 @@ class TicketsController extends Controller
                 }else{
                     $Prioridad          = 2;
                     $Categoria          = 4;
-                    $Asunto             = Request::get('title');
+                    $Asunto             = TicketsController::eliminar_tildes_texto($request->title);
                 }
             }
 
@@ -1490,9 +1462,6 @@ class TicketsController extends Controller
                 array_push($verrors, 'Hubo un problema al crear el ticket');
                 return Redirect::to('/crearSolicitud')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to('/crearSolicitud')->withErrors(['errors' => $verrors])->withRequest();
-            // return redirect('/crearSolicitud')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 }
