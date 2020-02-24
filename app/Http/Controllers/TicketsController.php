@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Response;
 
-class TicketsController extends Controller
-{
+
+class TicketsController extends Controller{
 
     public function crearTicket(Request $request){
         $creadoPor          = (int)Session::get('IdUsuario');
@@ -145,15 +145,15 @@ class TicketsController extends Controller
                 $cco = "$emailAsignado";
                 $calificacion = 1;
                 if($Estado === 3){
-                    // $calificacion1 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    // $calificacion2 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=2&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    // $calificacion3 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    // $calificacion4 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
-                    // $calificacion5 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
-                    $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    // $calificacion1 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    // $calificacion2 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=2&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    // $calificacion3 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    // $calificacion4 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    // $calificacion5 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
+                    $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=5&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=4&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=3&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
                     $calificacion5 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
                  }else{
                     $calificacion = 0;
@@ -192,8 +192,7 @@ class TicketsController extends Controller
     }
 
     public function actualizarTicket(Request $request){
-        $data               = Request::all();
-        $creadoPor          = (int)Session::get('IdUsuario');
+       $creadoPor          = (int)Session::get('IdUsuario');
         $buscarUsuario      = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador  = (int)$value->rol_id;
@@ -259,8 +258,8 @@ class TicketsController extends Controller
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias';
                         $extension          = $file->getClientOriginalExtension();
@@ -290,15 +289,15 @@ class TicketsController extends Controller
                 $cco = "$emailAsignado";
                 $calificacion = 1;
                 if($Estado === 3){
-                    // $calificacion1 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    // $calificacion2 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=2&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    // $calificacion3 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    // $calificacion4 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
-                    // $calificacion5 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
-                    $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    // $calificacion1 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=5&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    // $calificacion2 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=4&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    // $calificacion3 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=3&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    // $calificacion4 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=2&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    // $calificacion5 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
+                    $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=5&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=4&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=3&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
                     $calificacion5 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$idTicket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
                 }else{
                     $calificacion = 0;
@@ -553,7 +552,6 @@ class TicketsController extends Controller
         if ($validator->fails()) {
             return redirect($url.'/ticketsUsuario')->withErrors($validator)->withInput();
         }else{
-
 
             $Redes = 0;
             $Infraestructura = 0;
@@ -1053,9 +1051,9 @@ class TicketsController extends Controller
         }
     }
 
-    public function calificarTicket(){
-        $puntuacion = (int)Request::get('valor');
-        $idTicket   = (int)Request::get('idTicket');
+    public function calificarTicket(Request $request){
+        $puntuacion = (int)$request->valor;
+        $idTicket   = (int)$request->idTicket;
         $ipCliente  = $_SERVER['REMOTE_ADDR'];
         $UserName   = gethostbyaddr($_SERVER['REMOTE_ADDR']);
 
@@ -1197,24 +1195,21 @@ class TicketsController extends Controller
         }
     }
 
-    public function buscarCategoria(){
-
-        $data = Request::all();
-        $id   = Request::get('id_categoria');
+    public function buscarCategoria(Request $request){
+        $id   = $request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
             $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
-        return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
+        return response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
     }
 
-    public function buscarCategoriaS(){
+    public function buscarCategoriaS(Request $request){
 
-        $data = Request::all();
-        $id   = Request::get('id_categoria');
+        $id   = $request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1225,10 +1220,8 @@ class TicketsController extends Controller
 
     }
 
-    public function buscarCategoriaRepo(){
-
-        $data = Request::all();
-        $id   = Request::get('id_categoria');
+    public function buscarCategoriaRepo(Request $request){
+        $id   = $request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1239,10 +1232,8 @@ class TicketsController extends Controller
 
     }
 
-    public function buscarCategoriaUPD(){
-
-        $data = Request::all();
-        $id   = Request::get('id_categoria');
+    public function buscarCategoriaUPD(Request $request){
+        $id   = $request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1253,9 +1244,8 @@ class TicketsController extends Controller
 
     }
 
-    public function buscarArea(){
-        $data = Request::all();
-        $id   = Request::get('id_sede');
+    public function buscarArea(Request $request){
+        $id   = $request->id_sede;
         $NombreUsuario = array();
         $buscarUsuario = Sedes::BuscarAreaIdSede($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1376,8 +1366,8 @@ class TicketsController extends Controller
                 Tickets::CrearTicketAsignado($ticket,$Asunto,$Descripcion,$creadoPor,$AsignadoA);
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia')) {
-                    $files = Request::file('evidencia');
+                if ($request->hasFile('evidencia')) {
+                    $files = $request->file('evidencia');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias';
                         $extension          = $file->getClientOriginalExtension();
@@ -1415,16 +1405,16 @@ class TicketsController extends Controller
                 $cco = "$emailAsignado";
                 $calificacion = 1;
                 if($Estado === 3){
-                    $calificacion1 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    $calificacion2 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=2&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    $calificacion3 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    $calificacion4 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
-                    $calificacion5 = "<a href='http://192.168.0.125:8080/helpdeskcrcscb/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
-                    // $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
-                    // $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
-                    // $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
-                    // $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
-                    // $calificacion5 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
+                    // $calificacion1 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    // $calificacion2 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=2&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    // $calificacion3 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    // $calificacion4 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    // $calificacion5 = "<a href='http://192.168.0.125:8080/mesadeayuda/public/calificarTicket?valor=1&idTicket=$ticket'><img src='http://192.168.0.125:8080/helpdesk/public/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
+                    $calificacion1 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=5&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/excelente.png' width='60' height='60'/></a>";
+                    $calificacion2 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=4&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/dist/img/calificacion/bueno.png' width='60' height='60'/></a>";
+                    $calificacion3 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=3&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/regular.png' width='60' height='60'/></a>";
+                    $calificacion4 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=2&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/malo.png' width='60' height='60'/></a>";
+                    $calificacion5 = "<a href='http://crcscbmesadeayuda.cruzrojabogota.org.co/calificarTicket?valor=1&idTicket=$ticket'><img src='http://crcscbmesadeayuda.cruzrojabogota.org.co/assets/dist/img/calificacion/pesimo.png' width='60' height='60'/></a>";
                  }else{
                     $calificacion = 0;
                     $calificacion1 = null;

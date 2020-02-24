@@ -626,10 +626,9 @@ class Tickets extends Model
         return $historial;
     }
 
-    public static function Reporte($idTipo,$idCategoria,$idUsuarioC,$idUsuarioA,$idPrioridad,$idEstado,$idSede,$finicio,$ffin){
+    public static function Reporte($idTipo,$idCategoria,$idUsuarioC,$idUsuarioA,$idPrioridad,$idEstado,$idSede,$idArea,$finicio,$ffin){
         $fechaInicio    = date('Y-m-d', strtotime($finicio));
         $fechaFin       = date('Y-m-d', strtotime($ffin));
-        // dd($fechaInicio);
         if (!empty($idTipo)) {
             $tipo   = 'kind_id';
             $vtipo  = $idTipo;
@@ -686,6 +685,20 @@ class Tickets extends Model
             $sede   = '1';
             $vsede  = '1';
         }
+        if (!empty($idArea)) {
+            $area   = 'dependencia';
+            $BuscarArea = DB::Select("SELECT * FROM areas WHERE id = $idArea");
+            foreach($BuscarArea as $row){
+                $NombreArea = $row->name;
+            }
+            $varea  = $NombreArea;
+            $BuscarArea = "AND dependencia LIKE '%$NombreArea%'";
+        }
+        else{
+            $sede   = '1';
+            $vsede  = '1';
+            $BuscarArea = "AND $sede = $vsede";
+        }
         if($finicio === $ffin){
             $fecha = "WHERE created_at LIKE '%$finicio%'";
         }else{
@@ -699,7 +712,8 @@ class Tickets extends Model
                                 AND $usuarioA = $vusuarioA
                                 AND $prioridad = $vprioridad
                                 AND $estado = $vestado
-                                AND $sede = $vsede");
+                                AND $sede = $vsede
+                                $BuscarArea");
         return $reporteTicket;
     }
 

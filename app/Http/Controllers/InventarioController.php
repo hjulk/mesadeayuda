@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\HelpDesk\Inventario;
 use App\Models\Admin\Sedes;
 use App\Models\Admin\Usuarios;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Response;
 
 class InventarioController extends Controller
 {
@@ -22,17 +23,16 @@ class InventarioController extends Controller
         }
     }
 
-    public function asignacionEquipoMovil(){
-        $data = Request::all();
+    public function asignacionEquipoMovil(Request $request){
         $creadoPor          = (int)Session::get('IdUsuario');
-        $buscarUsuario = Usuarios::BuscarNombre($creadoPor);
+        $buscarUsuario      = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
-            $Administrador = (int)$value->rol_id;
+            $Administrador  = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $EstadoEquipo       = (int)Request::get('estado');
+        $EstadoEquipo       = (int)$request->estado;
         if($EstadoEquipo === 2){
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'tipo_equipo'       =>  'required',
                 'fecha_adquision'   =>  'required',
                 'serial'            =>  'required',
@@ -43,9 +43,9 @@ class InventarioController extends Controller
                 'estado'            =>  'required',
                 'area'              =>  'required',
                 'nombre_asignado'   =>  'required'
-            );
+            ]);
         }else{
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'tipo_equipo'       =>  'required',
                 'fecha_adquision'   =>  'required',
                 'serial'            =>  'required',
@@ -54,26 +54,23 @@ class InventarioController extends Controller
                 'imei'              =>  'required',
                 'capacidad'         =>  'required',
                 'estado'            =>  'required'
-            );
+            ]);
         }
 
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = Request::get('tipo_equipo');
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Marca              = Request::get('marca');
-            $Modelo             = Request::get('modelo');
-            $IMEI               = Request::get('imei');
-            $Capacidad          = Request::get('capacidad');
-            $LineaMovil         = Request::get('linea_movil');
-            $Area               = Request::get('area');
-            $NombreAsignado     = Request::get('nombre_asignado');
-            $EstadoEquipo       = Request::get('estado');
+        if ($validator->fails()) {
+            return redirect($url.'/mobile')->withErrors($validator)->withInput();
+        }else{
+            $TipoEquipo         = $request->tipo_equipo;
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Marca              = $request->marca;
+            $Modelo             = $request->modelo;
+            $IMEI               = $request->imei;
+            $Capacidad          = $request->capacidad;
+            $LineaMovil         = $request->linea_movil;
+            $Area               = $request->area;
+            $NombreAsignado     = $request->nombre_asignado;
+            $EstadoEquipo       = $request->estado;
             $BuscarInfoEquipo   = Inventario::BuscarInfoEquipoMovil($Serial);
             $TicketsBusqueda    = (int)count($BuscarInfoEquipo);
             foreach($BuscarInfoEquipo as $row){
@@ -96,8 +93,8 @@ class InventarioController extends Controller
                     }
                     $destinationPath = null;
                     $filename        = null;
-                    if (Request::hasFile('evidencia')) {
-                        $files = Request::file('evidencia');
+                    if ($request->hasFile('evidencia')) {
+                        $files = $request->file('evidencia');
                         foreach($files as $file){
                             $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/equipo_movil';
                             $extension          = $file->getClientOriginalExtension();
@@ -121,22 +118,20 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/mobile')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/mobile')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizacionEquipoMovil(){
-        $data = Request::all();
+    public function actualizacionEquipoMovil(Request $request){
+
         $creadoPor          = (int)Session::get('IdUsuario');
         $buscarUsuario = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $EstadoEquipo       = (int)Request::get('estado_upd');
+        $EstadoEquipo       = (int)$request->estado_upd;
         if($EstadoEquipo === 2){
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'tipo_equipo_upd'       =>  'required',
                 'fecha_adquision_upd'   =>  'required',
                 'serial_upd'            =>  'required',
@@ -148,9 +143,9 @@ class InventarioController extends Controller
                 'comentario'            =>  'required',
                 'area_upd'              =>  'required',
                 'nombre_asignado_upd'   =>  'required'
-            );
+            ]);
         }else{
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'tipo_equipo_upd'       =>  'required',
                 'fecha_adquision_upd'   =>  'required',
                 'serial_upd'            =>  'required',
@@ -160,29 +155,26 @@ class InventarioController extends Controller
                 'capacidad_upd'         =>  'required',
                 'estado_upd'            =>  'required',
                 'comentario'            =>  'required'
-            );
+            ]);
         }
 
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = Request::get('tipo_equipo_upd');
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial             = Request::get('serial_upd');
-            $Marca              = Request::get('marca_upd');
-            $Modelo             = Request::get('modelo_upd');
-            $IMEI               = Request::get('imei_upd');
-            $Capacidad          = Request::get('capacidad_upd');
-            $LineaMovil         = Request::get('linea_movil_upd');
-            $Area               = Request::get('area_upd');
-            $NombreAsignado     = Request::get('nombre_asignado_upd');
-            $EstadoEquipo       = Request::get('estado_upd');
-            $idEquipoMovil      = Request::get('idEM');
-            $Comentario         = Request::get('comentario');
-            if(Request::get('desvincular')){
+        if ($validator->fails()) {
+            return redirect($url.'/mobile')->withErrors($validator)->withInput();
+        }else{
+            $TipoEquipo         = $request->tipo_equipo_upd;
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial             = $request->serial_upd;
+            $Marca              = $request->marca_upd;
+            $Modelo             = $request->modelo_upd;
+            $IMEI               = $request->imei_upd;
+            $Capacidad          = $request->capacidad_upd;
+            $LineaMovil         = $request->linea_movil_upd;
+            $Area               = $request->area_upd;
+            $NombreAsignado     = $request->nombre_asignado_upd;
+            $EstadoEquipo       = $request->estado_upd;
+            $idEquipoMovil      = $request->idEM;
+            $Comentario         = $request->comentario;
+            if($request->desvincular){
                 $Desvincular = 1;
             }else{
                 $Desvincular = 0;
@@ -214,15 +206,14 @@ class InventarioController extends Controller
                 }
             }
 
-
             if($ActualizarEquipoMovil){
 
                 Inventario::RegistrarAsignadoEM($TipoEquipo,$idEquipoMovil,$Area,$NombreAsignado,$EstadoEquipo,$creadoPor);
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/equipo_movil';
                         $extension          = $file->getClientOriginalExtension();
@@ -244,22 +235,20 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el equipo movil');
                 return Redirect::to($url.'/mobile')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/mobile')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function asignacionLineaMovil(){
-        $data           = Request::all();
+    public function asignacionLineaMovil(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $Estado             = (int)Request::get('estado');
-        if($Estado === 2){
-            $reglas = array(
+        $EstadoEquipo             = (int)$request->estado;
+        if($EstadoEquipo === 2){
+            $validator = Validator::make($request->all(), [
                 'nro_linea'         =>  'required',
                 'fecha_adquision'   =>  'required',
                 'serial'            =>  'required',
@@ -271,9 +260,9 @@ class InventarioController extends Controller
                 'area'              =>  'required',
                 'personal'          =>  'required',
                 'estado'            =>  'required'
-            );
+            ]);
         }else{
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'nro_linea'         =>  'required',
                 'fecha_adquision'   =>  'required',
                 'serial'            =>  'required',
@@ -282,26 +271,24 @@ class InventarioController extends Controller
                 'plan'              =>  'required',
                 'pto_cargo'         =>  'required',
                 'estado'            =>  'required'
-            );
+            ]);
         }
 
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $NroLinea           = Request::get('nro_linea');
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Activo             = Request::get('activo');
-            $Proveedor          = Request::get('proveedores');
-            $Plan               = Request::get('plan');
-            $PtoCargo           = Request::get('pto_cargo');
-            $Cc                 = Request::get('cc');
-            $Area               = Request::get('area');
-            $Personal           = Request::get('personal');
-            $Estado             = Request::get('estado');
+        if ($validator->fails()) {
+            return redirect($url.'/lineMobile')->withErrors($validator)->withInput();
+        }else{
+
+            $NroLinea           = $request->nro_linea;
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Activo             = $request->activo;
+            $Proveedor          = $request->proveedores;
+            $Plan               = $request->plan;
+            $PtoCargo           = $request->pto_cargo;
+            $Cc                 = $request->cc;
+            $Area               = $request->area;
+            $Personal           = $request->personal;
+            $Estado             = $request->estado;
             $BuscarInfoEquipo   = Inventario::BuscarInfoLineaMovil($Serial);
             $TicketsBusqueda    = (int)count($BuscarInfoEquipo);
             foreach($BuscarInfoEquipo as $row){
@@ -323,8 +310,8 @@ class InventarioController extends Controller
                     }
                     $destinationPath = null;
                     $filename        = null;
-                    if (Request::hasFile('evidencia')) {
-                        $files = Request::file('evidencia');
+                    if ($request->hasFile('evidencia')) {
+                        $files = $request->file('evidencia');
                         foreach($files as $file){
                             $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/lineas/';
                             $extension          = $file->getClientOriginalExtension();
@@ -348,22 +335,19 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/lineMobile')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/lineMobile')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizacionLineaMovil(){
-        $data           = Request::all();
+    public function actualizacionLineaMovil(Request $request){
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $Estado             = (int)Request::get('estado_upd');
-        if($Estado === 2){
-            $reglas = array(
+        $EstadoEquipo             = (int)$request->estado_upd;
+        if($EstadoEquipo === 2){
+            $validator = Validator::make($request->all(), [
                 'nro_linea_upd'         =>  'required',
                 'fecha_adquision_upd'   =>  'required',
                 'serial_upd'            =>  'required',
@@ -376,9 +360,9 @@ class InventarioController extends Controller
                 'personal_upd'          =>  'required',
                 'estado_upd'            =>  'required',
                 'comentario'            =>  'required'
-            );
+            ]);
         }else{
-            $reglas = array(
+            $validator = Validator::make($request->all(), [
                 'nro_linea_upd'         =>  'required',
                 'fecha_adquision_upd'   =>  'required',
                 'serial_upd'            =>  'required',
@@ -388,27 +372,26 @@ class InventarioController extends Controller
                 'pto_cargo_upd'         =>  'required',
                 'estado_upd'            =>  'required',
                 'comentario'            =>  'required'
-            );
+            ]);
         }
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $NroLinea           = Request::get('nro_linea_upd');
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial             = Request::get('serial_upd');
-            $Activo             = Request::get('activo_upd');
-            $Proveedor          = Request::get('proveedores_upd');
-            $Plan               = Request::get('plan_upd');
-            $PtoCargo           = Request::get('pto_cargo_upd');
-            $Cc                 = Request::get('cc_upd');
-            $Area               = Request::get('area_upd');
-            $Personal           = Request::get('personal_upd');
-            $Estado             = Request::get('estado_upd');
-            $IdLineaMovil       = Request::get('idLM');
-            $Comentario         = Request::get('comentario');
+
+        if ($validator->fails()) {
+            return redirect($url.'/lineMobile')->withErrors($validator)->withInput();
+        }else{
+
+            $NroLinea           = $request->nro_linea_upd;
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial             = $request->serial_upd;
+            $Activo             = $request->activo_upd;
+            $Proveedor          = $request->proveedores_upd;
+            $Plan               = $request->plan_upd;
+            $PtoCargo           = $request->pto_cargo_upd;
+            $Cc                 = $request->cc_upd;
+            $Area               = $request->area_upd;
+            $Personal           = $request->personal_upd;
+            $Estado             = $request->estado_upd;
+            $IdLineaMovil       = $request->idLM;
+            $Comentario         = $request->comentario;
 
             $ActualizacionLineaMovil = Inventario::ActualizarLineaMovil($NroLinea,$FechaAdquisicion,$Serial,$Activo,$Proveedor,$Plan,$PtoCargo,$Cc,$Area,$Personal,$Estado,$creadoPor,$IdLineaMovil);
 
@@ -418,8 +401,8 @@ class InventarioController extends Controller
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/lineas/';
                         $extension          = $file->getClientOriginalExtension();
@@ -441,49 +424,43 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar la linea movil');
                 return Redirect::to($url.'/lineMobile')->withErrors(['errors' => $verrors])->withRequest();
             }
-
-        }else{
-            return Redirect::to($url.'/lineMobile')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function ingresoEquipo(){
-        $data           = Request::all();
+    public function ingresoEquipo(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_equipo'       =>  'required',
             'tipo_ingreso'      =>  'required',
             'fecha_adquision'   =>  'required',
             'serial'            =>  'required',
             'marca'             =>  'required',
             'estado'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = Request::get('tipo_equipo');
-            $TipoIngreso        = Request::get('tipo_ingreso');
-            if(Request::get('emp_renting')){
-                $EmpresaRenting = Request::get('emp_renting');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/desktops')->withErrors($validator)->withInput();
+        }else{
+            $TipoEquipo         = $request->tipo_equipo;
+            $TipoIngreso        = $request->tipo_ingreso;
+            if($request->emp_renting){
+                $EmpresaRenting = $request->emp_renting;
             }else{
                 $EmpresaRenting = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Marca              = Request::get('marca');
-            $Procesador         = Request::get('procesador');
-            $VelProcesador      = Request::get('vel_procesador');
-            $DiscoDuro          = Request::get('disco_duro');
-            $MemoriaRam         = Request::get('memoria_ram');
-            $EstadoEquipo       = Request::get('estado');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Marca              = $request->marca;
+            $Procesador         = $request->procesador;
+            $VelProcesador      = $request->vel_procesador;
+            $DiscoDuro          = $request->disco_duro;
+            $MemoriaRam         = $request->memoria_ram;
+            $EstadoEquipo       = $request->estado;
             $BuscarSerial       = Inventario::BuscarSerialEquipo($Serial);
             $TotalBusqueda      = (int)count($BuscarSerial);
             if($TotalBusqueda > 0){
@@ -500,8 +477,8 @@ class InventarioController extends Controller
                     }
                     $destinationPath = null;
                     $filename        = null;
-                    if (Request::hasFile('evidencia')) {
-                        $files = Request::file('evidencia');
+                    if ($request->hasFile('evidencia')) {
+                        $files = $request->file('evidencia');
                         foreach($files as $file){
                             $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/equipos/';
                             $extension          = $file->getClientOriginalExtension();
@@ -525,20 +502,18 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/desktops')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/desktops')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizacionEquipo(){
-        $data           = Request::all();
+    public function actualizacionEquipo(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_equipo_upd'       =>  'required',
             'tipo_ingreso_upd'      =>  'required',
             'fecha_adquision_upd'   =>  'required',
@@ -546,38 +521,36 @@ class InventarioController extends Controller
             'marca_upd'             =>  'required',
             'comentario'            =>  'required',
             'estado_upd'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = Request::get('tipo_equipo_upd');
-            $TipoIngreso        = Request::get('tipo_ingreso_upd');
-            if(Request::get('emp_renting_upd')){
-                $EmpresaRenting = Request::get('emp_renting_upd');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/desktops')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoEquipo         = $request->tipo_equipo_upd;
+            $TipoIngreso        = $request->tipo_ingreso_upd;
+            if($request->emp_renting_upd){
+                $EmpresaRenting = $request->emp_renting_upd;
             }else{
                 $EmpresaRenting = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial             = Request::get('serial_upd');
-            $Marca              = Request::get('marca_upd');
-            $Procesador         = Request::get('procesador_upd');
-            $VelProcesador      = Request::get('vel_procesador_upd');
-            $DiscoDuro          = Request::get('disco_duro_upd');
-            $MemoriaRam         = Request::get('memoria_ram_upd');
-            $EstadoEquipo       = Request::get('estado_upd');
-            $Comentario         = Request::get('comentario');
-            $IdEquipo           = Request::get('idE');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial             = $request->serial_upd;
+            $Marca              = $request->marca_upd;
+            $Procesador         = $request->procesador_upd;
+            $VelProcesador      = $request->vel_procesador_upd;
+            $DiscoDuro          = $request->disco_duro_upd;
+            $MemoriaRam         = $request->memoria_ram_upd;
+            $EstadoEquipo       = $request->estado_upd;
+            $Comentario         = $request->comentario;
+            $IdEquipo           = $request->idE;
 
             $ActualizarEquipo   = Inventario::ActualizarEquipo($TipoEquipo,$TipoIngreso,$EmpresaRenting,$FechaAdquisicion,$Serial,$Marca,$Procesador,$VelProcesador,$DiscoDuro,$MemoriaRam,$EstadoEquipo,$creadoPor,$IdEquipo);
 
             if($ActualizarEquipo){
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/equipos/';
                         $extension          = $file->getClientOriginalExtension();
@@ -599,45 +572,41 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el equipo');
                 return Redirect::to($url.'/desktops')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/desktops')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function ingresoPeriferico(){
-        $data           = Request::all();
+    public function ingresoPeriferico(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_periferico'   =>  'required',
             'tipo_ingreso'      =>  'required',
             'fecha_adquision'   =>  'required',
             'serial'            =>  'required',
             'marca'             =>  'required',
             'estado'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoPeriferico     = (int)Request::get('tipo_periferico');
-            $TipoIngreso        = (int)Request::get('tipo_ingreso');
-            if(Request::get('emp_renting')){
-                $EmpresaRent    = Request::get('emp_renting');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/periferic')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoPeriferico     = (int)$request->tipo_periferico;
+            $TipoIngreso        = (int)$request->tipo_ingreso;
+            if($request->emp_renting){
+                $EmpresaRent    = $request->emp_renting;
             }else{
                 $EmpresaRent    = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Marca              = Request::get('marca');
-            $Tamano             = Request::get('tamano');
-            $Estado             = (int)Request::get('estado');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Marca              = $request->marca;
+            $Tamano             = $request->tamano;
+            $Estado             = (int)$request->estado;
             $BuscarSerial       = Inventario::BuscarSerialEquipo($Serial);
             $TotalBusqueda      = (int)count($BuscarSerial);
             if($TotalBusqueda > 0){
@@ -671,8 +640,8 @@ class InventarioController extends Controller
                         Inventario::InsertarPeriferico($TipoPeriferico,$Serial,$Marca,$Tamano,$Estado,$FechaAdquisicion,$idPeriferico);
                         $destinationPath = null;
                         $filename        = null;
-                        if (Request::hasFile('evidencia')) {
-                            $files = Request::file('evidencia');
+                        if ($request->hasFile('evidencia')) {
+                            $files = $request->file('evidencia');
                             foreach($files as $file){
                                 $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/'.$Carpeta;
                                 $extension          = $file->getClientOriginalExtension();
@@ -696,20 +665,18 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/periferic')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/periferic')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizacionPeriferico(){
-        $data           = Request::all();
+    public function actualizacionPeriferico(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_periferico_upd'   =>  'required',
             'tipo_ingreso_upd'      =>  'required',
             'fecha_adquision_upd'   =>  'required',
@@ -717,27 +684,24 @@ class InventarioController extends Controller
             'marca_upd'             =>  'required',
             'estado_upd'            =>  'reduired',
             'comentario'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoPeriferico     = (int)Request::get('tipo_periferico_upd');
-            $TipoIngreso        = (int)Request::get('tipo_ingreso_upd');
-            if(Request::get('emp_renting_upd')){
-                $EmpresaRent    = Request::get('emp_renting_upd');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/periferic')->withErrors($validator)->withInput();
+        }else{
+            $TipoPeriferico     = (int)$request->tipo_periferico_upd;
+            $TipoIngreso        = (int)$request->tipo_ingreso_upd;
+            if($request->emp_renting_upd){
+                $EmpresaRent    = $request->emp_renting_upd;
             }else{
                 $EmpresaRent    = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial             = Request::get('serial_upd');
-            $Marca              = Request::get('marca_upd');
-            $Tamano             = Request::get('tamano_upd');
-            $Estado             = (int)Request::get('estado_upd');
-            $Comentario         = Request::get('comentario');
-            $IdPeriferico       = (int)Request::get('idP');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial             = $request->serial_upd;
+            $Marca              = $request->marca_upd;
+            $Tamano             = $request->tamano_upd;
+            $Estado             = (int)$request->estado_upd;
+            $Comentario         = $request->comentario;
+            $IdPeriferico       = (int)$request->idP;
 
             $ActualizarPeriferico = Inventario::ActualizarPeriferico($TipoPeriferico,$TipoIngreso,$EmpresaRent,$FechaAdquisicion,$Serial,$Marca,$Tamano,$Estado,$creadoPor,$IdPeriferico);
 
@@ -762,8 +726,8 @@ class InventarioController extends Controller
                 Inventario::ActualizarTPeriferico($TipoPeriferico,$Serial,$Marca,$Tamano,$Estado,$FechaAdquisicion,$IdPeriferico);
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/'.$Carpeta;
                         $extension          = $file->getClientOriginalExtension();
@@ -786,47 +750,43 @@ class InventarioController extends Controller
                 return Redirect::to($url.'/periferic')->withErrors(['errors' => $verrors])->withRequest();
             }
 
-        }else{
-            return Redirect::to($url.'/periferic')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function ingresarConsumible(){
-        $data           = Request::all();
+    public function ingresarConsumible(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_consumible'   =>  'required',
             'tipo_ingreso'      =>  'required',
             'fecha_adquision'   =>  'required',
             'serial'            =>  'required',
             'marca'             =>  'required',
             'estado'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoConsumible     = (int)Request::get('tipo_consumible');
-            $TipoIngreso        = (int)Request::get('tipo_ingreso');
-            if(Request::get('emp_renting')){
-                $EmpresaRent    = Request::get('emp_renting');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/consumible')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoConsumible     = (int)$request->tipo_consumible;
+            $TipoIngreso        = (int)$request->tipo_ingreso;
+            if($request->emp_renting){
+                $EmpresaRent    = $request->emp_renting;
             }else{
                 $EmpresaRent    = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Marca              = Request::get('marca');
-            $Modelo             = Request::get('modelo');
-            $CompaRef           = Request::get('compa_ref');
-            $CompaMod           = Request::get('compa_ref');
-            $Estado             = (int)Request::get('estado');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Marca              = $request->marca;
+            $Modelo             = $request->modelo;
+            $CompaRef           = $request->compa_ref;
+            $CompaMod           = $request->compa_ref;
+            $Estado             = (int)$request->estado;
             $BuscarSerial       = Inventario::BuscarSerialConsumible($Serial);
             $TotalBusqueda      = (int)count($BuscarSerial);
             if($TotalBusqueda > 0){
@@ -842,8 +802,8 @@ class InventarioController extends Controller
                     }
                     $destinationPath = null;
                     $filename        = null;
-                    if (Request::hasFile('evidencia')) {
-                        $files = Request::file('evidencia');
+                    if ($request->hasFile('evidencia')) {
+                        $files = $request->file('evidencia');
                         foreach($files as $file){
                             $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/consumibles/';
                             $extension          = $file->getClientOriginalExtension();
@@ -867,20 +827,18 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/consumible')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/consumible')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizarConsumible(){
-        $data           = Request::all();
+    public function actualizarConsumible(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_consumible_upd'   =>  'required',
             'tipo_ingreso_upd'      =>  'required',
             'fecha_adquision_upd'   =>  'required',
@@ -888,35 +846,33 @@ class InventarioController extends Controller
             'marca_upd'             =>  'required',
             'estado_upd'            =>  'required',
             'comentario'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoConsumible         = (int)Request::get('tipo_consumible_upd');
-            $TipoIngreso            = (int)Request::get('tipo_ingreso_upd');
-            if(Request::get('emp_renting_upd')){
-                $EmpresaRent        = Request::get('emp_renting_upd');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/consumible')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoConsumible         = (int)$request->tipo_consumible_upd;
+            $TipoIngreso            = (int)$request->tipo_ingreso_upd;
+            if($request->emp_renting_upd){
+                $EmpresaRent        = $request->emp_renting_upd;
             }else{
                 $EmpresaRent        = 'SIN EMPRESA';
             }
-            $FechaAdquisicion       = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial                 = Request::get('serial_upd');
-            $Marca                  = Request::get('marca_upd');
-            $Modelo                 = Request::get('modelo_upd');
-            $CompaRef               = Request::get('compa_ref_upd');
-            $CompaMod               = Request::get('compa_ref_upd');
-            $Estado                 = (int)Request::get('estado_upd');
-            $Comentario             = Request::get('comentario');
-            $IdConsumible           = (int)Request::get('idC');
+            $FechaAdquisicion       = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial                 = $request->serial_upd;
+            $Marca                  = $request->marca_upd;
+            $Modelo                 = $request->modelo_upd;
+            $CompaRef               = $request->compa_ref_upd;
+            $CompaMod               = $request->compa_ref_upd;
+            $Estado                 = (int)$request->estado_upd;
+            $Comentario             = $request->comentario;
+            $IdConsumible           = (int)$request->idC;
             $ActualizarConsumible   = Inventario::ActualizarConsumible($TipoConsumible,$TipoIngreso,$EmpresaRent,$FechaAdquisicion,$Serial,$Marca,$Modelo,$CompaRef,$CompaMod,$Estado,$creadoPor,$IdConsumible);
             if($ActualizarConsumible){
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia')) {
-                    $files = Request::file('evidencia');
+                if ($request->hasFile('evidencia')) {
+                    $files = $request->file('evidencia');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/consumibles/';
                         $extension          = $file->getClientOriginalExtension();
@@ -938,46 +894,42 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el Consumible');
                 return Redirect::to($url.'/consumible')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/consumible')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function ingresarImpresora(){
-        $data           = Request::all();
+    public function ingresarImpresora(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_impresora'    =>  'required',
             'tipo_ingreso'      =>  'required',
             'fecha_adquision'   =>  'required',
             'serial'            =>  'required',
             'marca'             =>  'required',
             'estado'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoImpresora      = Request::get('tipo_impresora');
-            $TipoIngreso        = (int)Request::get('tipo_ingreso');
-            if(Request::get('emp_renting')){
-                $EmpresaRent    = Request::get('emp_renting');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/printers')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoImpresora      = $request->tipo_impresora;
+            $TipoIngreso        = (int)$request->tipo_ingreso;
+            if($request->emp_renting){
+                $EmpresaRent    = $request->emp_renting;
             }else{
                 $EmpresaRent    = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision')));
-            $Serial             = Request::get('serial');
-            $Marca              = Request::get('marca');
-            $Ip                 = Request::get('ip');
-            $IdConsumible       = (int)Request::get('id_consumible');
-            $Estado             = (int)Request::get('estado');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision));
+            $Serial             = $request->serial;
+            $Marca              = $request->marca;
+            $Ip                 = $request->ip;
+            $IdConsumible       = (int)$request->id_consumible;
+            $Estado             = (int)$request->estado;
             $BuscarSerial       = Inventario::BuscarSerialImpresora($Serial);
             $TotalBusqueda      = (int)count($BuscarSerial);
             if($TotalBusqueda > 0){
@@ -993,8 +945,8 @@ class InventarioController extends Controller
                     }
                     $destinationPath = null;
                     $filename        = null;
-                    if (Request::hasFile('evidencia')) {
-                        $files = Request::file('evidencia');
+                    if ($request->hasFile('evidencia')) {
+                        $files = $request->file('evidencia');
                         foreach($files as $file){
                             $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/impresoras/';
                             $extension          = $file->getClientOriginalExtension();
@@ -1018,20 +970,18 @@ class InventarioController extends Controller
                     return Redirect::to($url.'/printers')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return Redirect::to($url.'/printers')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizarImpresora(){
-        $data           = Request::all();
+    public function actualizarImpresora(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_impresora_upd'    =>  'required',
             'tipo_ingreso_upd'      =>  'required',
             'fecha_adquision_upd'   =>  'required',
@@ -1039,28 +989,26 @@ class InventarioController extends Controller
             'marca_upd'             =>  'required',
             'estado_upd'            =>  'required',
             'comentario'            =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoImpresora      = Request::get('tipo_impresora_upd');
-            $TipoIngreso        = (int)Request::get('tipo_ingreso_upd');
-            if(Request::get('emp_renting_upd')){
-                $EmpresaRent    = Request::get('emp_renting_upd');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/printers')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoImpresora      = $request->tipo_impresora_upd;
+            $TipoIngreso        = (int)$request->tipo_ingreso_upd;
+            if($request->emp_renting_upd){
+                $EmpresaRent    = $request->emp_renting_upd;
             }else{
                 $EmpresaRent    = 'SIN EMPRESA';
             }
-            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime(Request::get('fecha_adquision_upd')));
-            $Serial             = Request::get('serial_upd');
-            $Marca              = Request::get('marca_upd');
-            $Ip                 = Request::get('ip_upd');
-            $IdConsumible       = (int)Request::get('id_consumible_upd');
-            $Estado             = (int)Request::get('estado_upd');
-            $Comentario         = Request::get('comentario');
-            $IdImpresora        = (int)Request::get('idI');
+            $FechaAdquisicion   = date('Y-m-d H:i:s', strtotime($request->fecha_adquision_upd));
+            $Serial             = $request->serial_upd;
+            $Marca              = $request->marca_upd;
+            $Ip                 = $request->ip_upd;
+            $IdConsumible       = (int)$request->id_consumible_upd;
+            $Estado             = (int)$request->estado_upd;
+            $Comentario         = $request->comentario;
+            $IdImpresora        = (int)$request->idI;
             $EstadoConsumible   = Inventario::EstadoConsumible($IdConsumible);
             $BuscarConsumible   = Inventario::BuscarConsumibleID($IdConsumible,$IdImpresora);
             $countBusqueda      = count($BuscarConsumible);
@@ -1089,8 +1037,8 @@ class InventarioController extends Controller
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia')) {
-                    $files = Request::file('evidencia');
+                if ($request->hasFile('evidencia')) {
+                    $files = $request->file('evidencia');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/impresoras/';
                         $extension          = $file->getClientOriginalExtension();
@@ -1114,73 +1062,68 @@ class InventarioController extends Controller
                 return Redirect::to($url.'/printers')->withErrors(['errors' => $verrors])->withRequest();
             }
 
-        }else{
-            return Redirect::to($url.'/printers')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function buscarEquipo(){
-        $data               = Request::all();
-        $id                 = (int)Request::get('tipo_equipo');
+    public function buscarEquipo(Request $request){
+        $id                 = (int)$request->tipo_equipo;
         $MarcaSerial        = array();
         $buscarUsuario      = Inventario::BuscarXTipoEquipo($id);
         // $MarcaSerial[0]     = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
             $MarcaSerial[$row->id] = $row->marca.' - '.$row->serial;
         }
-        return \Response::json(array('valido'=>'true','Equipo'=>$MarcaSerial));
+        return Response::json(array('valido'=>'true','Equipo'=>$MarcaSerial));
     }
 
-    public function ingresarAsignacion(){
-        $data           = Request::all();
+    public function ingresarAsignacion(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_equipo'       =>  'required',
             'marca_serial'      =>  'required',
             'nombre_asignado'   =>  'required',
             'cargo'             =>  'required',
             'cedula'            =>  'required',
             'telefono'          =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = (int)Request::get('tipo_equipo');
-            $IdEquipo           = (int)Request::get('marca_serial');
-            if(Request::get('mouse') != ''){
-                $Mouse          = (int)Request::get('mouse');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/asigneds')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoEquipo         = (int)$request->tipo_equipo;
+            $IdEquipo           = (int)$request->marca_serial;
+            if($request->mouse != ''){
+                $Mouse          = (int)$request->mouse;
             }else{
                 $Mouse          = null;
             }
-            if(Request::get('pantalla') != ''){
-                $Pantalla       = (int)Request::get('pantalla');
+            if($request->pantalla != ''){
+                $Pantalla       = (int)$request->pantalla;
             }else{
                 $Pantalla       = null;
             }
-            if(Request::get('teclado') != ''){
-                $Teclado        = (int)Request::get('teclado');
+            if($request->teclado != ''){
+                $Teclado        = (int)$request->teclado;
             }else{
                 $Teclado        = null;
             }
-            if(Request::get('cargador') != ''){
-                $Cargador       = (int)Request::get('cargador');
+            if($request->cargador != ''){
+                $Cargador       = (int)$request->cargador;
             }else{
                 $Cargador       = null;
             }
-            $Opcion             = (int)Request::get('opcion');
+            $Opcion             = (int)$request->opcion;
             if($Opcion === 1){
-                $TipoGuaya      = (int)Request::get('tipo_guaya');
-                $IdGuaya        = (int)Request::get('guaya');
+                $TipoGuaya      = (int)$request->tipo_guaya;
+                $IdGuaya        = (int)$request->guaya;
                 switch($TipoGuaya){
-                    Case 1: $CodeGuaya = Request::get('code_guaya');
+                    Case 1: $CodeGuaya = $request->code_guaya;
                             break;
                     Case 2: $CodeGuaya = null;
                             break;
@@ -1190,29 +1133,29 @@ class InventarioController extends Controller
                 $IdGuaya        = null;
                 $CodeGuaya      = null;
             }
-            $Sede               = (int)Request::get('sede');
-            $IdArea             = (int)Request::get('area');
+            $Sede               = (int)$request->sede;
+            $IdArea             = (int)$request->area;
             $BuscarArea         = Sedes::BuscarAreaId($IdArea);
             foreach($BuscarArea as $row){
                 $Area           = $row->name;
             }
-            // if(Request::get('area')){
-            //     $Area           = Request::get('area');
+            // if($request->area')){
+            //     $Area           = $request->area');
             // }else{
             //     $Area           = 'SIN AREA';
             // }
-            $NombreAsignado     = Request::get('nombre_asignado');
-            $Cargo              = Request::get('cargo');
-            $Cedula             = Request::get('cedula');
-            $Telefono           = Request::get('telefono');
-            $Correo             = Request::get('correo');
-            if(Request::get('ticket')){
-                $Ticket         = (int)Request::get('ticket');
+            $NombreAsignado     = $request->nombre_asignado;
+            $Cargo              = $request->cargo;
+            $Cedula             = $request->cedula;
+            $Telefono           = $request->telefono;
+            $Correo             = $request->correo;
+            if($request->ticket){
+                $Ticket         = (int)$request->ticket;
             }else{
                 $Ticket         = 0;
             }
-            $FechaAsignacion    = date('Y-m-d H:i:s', strtotime(Request::get('fecha_asignacion')));
-            $EstadoAsignado     = (int)Request::get('estado');
+            $FechaAsignacion    = date('Y-m-d H:i:s', strtotime($request->fecha_asignacion));
+            $EstadoAsignado     = (int)$request->estado;
 
             $CrearAsignado = Inventario::IngresarAsignado($TipoEquipo,$IdEquipo,$Mouse,$Pantalla,$Teclado,$Cargador,$TipoGuaya,$IdGuaya,$CodeGuaya,
                                         $Sede,$Area,$NombreAsignado,$Cargo,$Cedula,$Telefono,$Correo,$Ticket,$FechaAsignacion,$EstadoAsignado,$creadoPor);
@@ -1224,8 +1167,8 @@ class InventarioController extends Controller
                 }
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia')) {
-                    $files = Request::file('evidencia');
+                if ($request->hasFile('evidencia')) {
+                    $files = $request->file('evidencia');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/actas_entrega/';
                         $extension          = $file->getClientOriginalExtension();
@@ -1248,61 +1191,57 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al crear el asignado');
                 return Redirect::to($url.'/asigneds')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/asigneds')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 
-    public function actualizarAsignacion(){
-        $data           = Request::all();
+    public function actualizarAsignacion(Request $request){
+
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
         $url = InventarioController::BuscarURL($Administrador);
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'tipo_equipo_upd'       =>  'required',
             'marca_serial_upd'      =>  'required',
             'nombre_asignado_upd'   =>  'required',
             'cargo_upd'             =>  'required',
             'cedula_upd'            =>  'required',
             'telefono_upd'          =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $TipoEquipo         = (int)Request::get('tipo_equipo_upd');
-            $IdEquipo           = (int)Request::get('marca_serial_upd');
-            if(Request::get('mouse_upd') != ''){
-                $Mouse          = (int)Request::get('mouse_upd');
+        ]);
+        if ($validator->fails()) {
+            return redirect($url.'/asigneds')->withErrors($validator)->withInput();
+        }else{
+
+            $TipoEquipo         = (int)$request->tipo_equipo_upd;
+            $IdEquipo           = (int)$request->marca_serial_upd;
+            if($request->mouse_upd != ''){
+                $Mouse          = (int)$request->mouse_upd;
             }else{
                 $Mouse          = 'null';
             }
-            if(Request::get('pantalla_upd') != ''){
-                $Pantalla       = (int)Request::get('pantalla_upd');
+            if($request->pantalla_upd != ''){
+                $Pantalla       = (int)$request->pantalla_upd;
             }else{
                 $Pantalla       = 'null';
             }
-            if(Request::get('teclado_upd') != ''){
-                $Teclado        = (int)Request::get('teclado_upd');
+            if($request->teclado_upd != ''){
+                $Teclado        = (int)$request->teclado_upd;
             }else{
                 $Teclado        = 'null';
             }
-            if(Request::get('cargador_upd') != ''){
-                $Cargador       = (int)Request::get('cargador_upd');
+            if($request->cargador_upd != ''){
+                $Cargador       = (int)$request->cargador_upd;
             }else{
                 $Cargador       = 'null';
             }
-            $Opcion             = (int)Request::get('opcion_upd');
+            $Opcion             = (int)$request->opcion_upd;
             if($Opcion === 1){
-                $TipoGuaya      = (int)Request::get('tipo_guaya_upd');
-                $IdGuaya        = (int)Request::get('guaya_upd');
+                $TipoGuaya      = (int)$request->tipo_guaya_upd;
+                $IdGuaya        = (int)$request->guaya_upd;
                 switch($TipoGuaya){
-                    Case 1: $CodeGuaya = Request::get('code_guaya_upd');
+                    Case 1: $CodeGuaya = $request->code_guaya_upd;
                             break;
                     Case 2: $CodeGuaya = null;
                             break;
@@ -1312,34 +1251,34 @@ class InventarioController extends Controller
                 $IdGuaya        = 'null';
                 $CodeGuaya      = null;
             }
-            $Sede               = (int)Request::get('sede_upd');
-            if(Request::get('area_upd')){
-                $Area           = Request::get('area_upd');
+            $Sede               = (int)$request->sede_upd;
+            if($request->area_upd){
+                $Area           = $request->area_upd;
             }else{
                 $Area           = 'SIN AREA';
             }
-            $NombreAsignado     = Request::get('nombre_asignado_upd');
-            $Cargo              = Request::get('cargo_upd');
-            $Cedula             = Request::get('cedula_upd');
-            $Telefono           = Request::get('telefono_upd');
-            $Correo             = Request::get('correo_upd');
-            if(Request::get('ticket_upd')){
-                $Ticket         = (int)Request::get('ticket_upd');
+            $NombreAsignado     = $request->nombre_asignado_upd;
+            $Cargo              = $request->cargo_upd;
+            $Cedula             = $request->cedula_upd;
+            $Telefono           = $request->telefono_upd;
+            $Correo             = $request->correo_upd;
+            if($request->ticket_upd){
+                $Ticket         = (int)$request->ticket_upd;
             }else{
                 $Ticket         = 0;
             }
-            $FechaAsignacion    = date('Y-m-d H:i:s', strtotime(Request::get('fecha_asignacion_upd')));
-            $EstadoAsignado     = (int)Request::get('estado_upd');
-            $Comentario         = Request::get('comentario');
-            $IdAsignado         = (int)Request::get('idA');
+            $FechaAsignacion    = date('Y-m-d H:i:s', strtotime($request->fecha_asignacion_upd));
+            $EstadoAsignado     = (int)$request->estado_upd;
+            $Comentario         = $request->comentario;
+            $IdAsignado         = (int)$request->idA;
 
             $ActualizarAsignado = Inventario::ActualizarAsignado($TipoEquipo,$IdEquipo,$Mouse,$Pantalla,$Teclado,$Cargador,$TipoGuaya,$IdGuaya,$CodeGuaya,
                                     $Sede,$Area,$NombreAsignado,$Cargo,$Cedula,$Telefono,$Correo,$Ticket,$FechaAsignacion,$EstadoAsignado,$creadoPor,$IdAsignado);
             if($ActualizarAsignado){
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('evidencia_upd')) {
-                    $files = Request::file('evidencia_upd');
+                if ($request->hasFile('evidencia_upd')) {
+                    $files = $request->file('evidencia_upd');
                     foreach($files as $file){
                         $destinationPath    = public_path().'/assets/dist/img/evidencias_inventario/actas_entrega/';
                         $extension          = $file->getClientOriginalExtension();
@@ -1362,8 +1301,6 @@ class InventarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el asignado');
                 return Redirect::to($url.'/asigneds')->withErrors(['errors' => $verrors])->withRequest();
             }
-        }else{
-            return Redirect::to($url.'/asigneds')->withErrors(['errors' => $verrors])->withRequest();
         }
     }
 }

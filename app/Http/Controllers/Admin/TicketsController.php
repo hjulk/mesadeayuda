@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Input;
 use App\Models\Admin\Sedes;
 use App\Models\Admin\Usuarios;
 use App\Models\Admin\Roles;
@@ -155,7 +155,7 @@ class TicketsController extends Controller
         $NombreCategoria = array();
         $NombreCategoria[''] = 'Seleccione: ';
         foreach ($Categoria as $row){
-            $NombreCategoria[$row->id] = $row->name;
+            $NombreCategoria[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
 
         $Prioridad  = Tickets::ListarPrioridad();
@@ -174,26 +174,26 @@ class TicketsController extends Controller
         $Sedes  = Tickets::Sedes();
 
         foreach ($Sedes as $row){
-            $NombreSede[$row->id] = $row->name;
+            $NombreSede[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
         }
 
         $Tipo  = Tickets::ListarTipo();
         $NombreTipo = array();
-        $NombreTipo[''] = 'Seleccione: ';
+        $NombreTipo[0] = 'Seleccione: ';
         foreach ($Tipo as $row){
             $NombreTipo[$row->id] = $row->name;
         }
 
         $Estado  = Tickets::ListarEstado();
         $NombreEstado = array();
-        $NombreEstado[''] = 'Seleccione: ';
+        $NombreEstado[0] = 'Seleccione: ';
         foreach ($Estado as $row){
             $NombreEstado[$row->id] = $row->name;
         }
 
         $EstadoUpd  = Tickets::ListarEstadoUpd();
         $NombreEstadoUpd = array();
-        $NombreEstadoUpd[''] = 'Seleccione: ';
+        $NombreEstadoUpd[0] = 'Seleccione: ';
         foreach ($EstadoUpd as $row){
             $NombreEstadoUpd[$row->id] = $row->name;
         }
@@ -327,7 +327,7 @@ class TicketsController extends Controller
 
         $EstadoA  = Tickets::ListarEstadoA();
         $NombreEstadoA = array();
-        $NombreEstadoA[''] = 'Seleccione: ';
+        $NombreEstadoA[0] = 'Seleccione: ';
         foreach ($EstadoA as $row){
             $NombreEstadoA[$row->id] = $row->name;
         }
@@ -338,7 +338,7 @@ class TicketsController extends Controller
         $Opciones[0]    = 'NO';
 
         $NombreEquipo       = array();
-        $NombreEquipo['']   = 'Seleccione: ';
+        $NombreEquipo[0]   = 'Seleccione: ';
         $Equipo             = Inventario::ListarEquipoUsuarioC();
         foreach ($Equipo as $row){
             $NombreEquipo[$row->id] = $row->name;
@@ -410,17 +410,24 @@ class TicketsController extends Controller
         foreach ($Estado as $row){
             $NombreEstado[$row->id] = $row->name;
         }
+        $Areas  = Sedes::ListarAreas();
+        $NombreArea = array();
+        $NombreArea[0] = 'Seleccione: ';
+        foreach ($Areas as $row){
+            $NombreArea[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
+        }
+
         $Opcion = array();
         $Opcion[''] = "Seleccione :";
         $Opcion[1] = "Número de Ticket";
         $Opcion[2] = "Fechas y otras opciones";
         return view('tickets.reporte',['Tipo' => $NombreTipo,'Estado' => $NombreEstado,'Categoria' => $NombreCategoria,
                                         'Usuario' => $NombreUsuario,'Prioridad' => $NombrePrioridad,'Opcion' => $Opcion,
-                                        'Sede' => $NombreSedes, 'FechaInicio' => null,'FechaFin' => null]);
+                                        'Sede' => $NombreSedes, 'FechaInicio' => null,'FechaFin' => null,'Areas' => $NombreArea]);
     }
 
     public function consultarTickets(){
-        $data = Request::all();
+        $data = Input::all();
         $reglas = array(
             'fechaInicio'   =>  'required',
             'fechaFin'      =>  'required'
@@ -431,44 +438,46 @@ class TicketsController extends Controller
             $verrors[$key] = $messages->first($key);
         }
         if($validador->passes()) {
-            $idTipo         = (int)Request::get('id_tipo');
-            $idCategoria    = (int)Request::get('id_categoria');
-            $idUsuarioC     = (int)Request::get('id_creado');
-            $idUsuarioA     = (int)Request::get('id_asignado');
-            $idPrioridad    = (int)Request::get('id_prioridad');
-            $idEstado       = (int)Request::get('id_estado');
-            $idSede         = (int)Request::get('id_sede');
-            $finicio        = Request::get('fechaInicio');
-            $ffin           = Request::get('fechaFin');
-            $consultaReporte = Tickets::Reporte($idTipo,$idCategoria,$idUsuarioC,$idUsuarioA,$idPrioridad,$idEstado,$idSede,$finicio,$ffin);
+            $idTipo         = Input::get('id_tipo');
+            $idCategoria    = Input::get('id_categoria');
+            $idUsuarioC     = Input::get('id_creado');
+            $idUsuarioA     = Input::get('id_asignado');
+            $idPrioridad    = Input::get('id_prioridad');
+            $idEstado       = Input::get('id_estado');
+            $idSede         = Input::get('id_sede');
+            $idArea         = Input::get('id_area');
+            $finicio        = Input::get('fechaInicio');
+            $ffin           = Input::get('fechaFin');
+            $consultaReporte = Tickets::Reporte($idTipo,$idCategoria,$idUsuarioC,$idUsuarioA,$idPrioridad,$idEstado,$idSede,$idArea,$finicio,$ffin);
 
             $resultado = json_decode(json_encode($consultaReporte), true);
             foreach($resultado as &$value) {
-                $value['title'] = TicketsController::eliminar_tildes_texto($value['title']);
-                $value['description'] = TicketsController::eliminar_tildes_texto($value['description']);
-                $value['created_at'] = date('d/m/Y h:i A', strtotime($value['created_at']));
+                $value['title']             = TicketsController::eliminar_tildes_texto($value['title']);
+                $value['description']       = TicketsController::eliminar_tildes_texto($value['description']);
+                $value['dependencia']       = TicketsController::eliminar_tildes_texto($value['dependencia']);
+                $value['created_at']        = date('d/m/Y h:i A', strtotime($value['created_at']));
                 if($value['updated_at']){
-                    $value['updated_at'] = date('d/m/Y h:i A', strtotime($value['updated_at']));
+                    $value['updated_at']    = date('d/m/Y h:i A', strtotime($value['updated_at']));
                 }else{
-                    $value['updated_at'] = 'SIN ACTUALIZACIÓN';
+                    $value['updated_at']    = 'SIN ACTUALIZACIÓN';
                 }
-                $id_tipo = (int)$value['kind_id'];
-                $nombreTipo = Tickets::Tipo($id_tipo);
+                $id_tipo                    = (int)$value['kind_id'];
+                $nombreTipo                 = Tickets::Tipo($id_tipo);
                 foreach($nombreTipo as $valor){
-                    $value['kind_id'] = $valor->name;
+                    $value['kind_id']       = $valor->name;
                 }
-                $id_categoria = (int)$value['category_id'];
-                $nombreCategoria = Tickets::Categoria($id_categoria);
+                $id_categoria               = (int)$value['category_id'];
+                $nombreCategoria            = Tickets::Categoria($id_categoria);
                 foreach($nombreCategoria as $valor){
-                    $value['category_id'] =  TicketsController::eliminar_tildes_texto($valor->name);
+                    $value['category_id']   =  TicketsController::eliminar_tildes_texto($valor->name);
                 }
-                $id_sede = (int)$value['project_id'];
+                $id_sede                    = (int)$value['project_id'];
                 $nombreSedeS = Sedes::BuscarSedeID($id_sede);
                 foreach($nombreSedeS as $valor){
-                    $value['project_id'] =  TicketsController::eliminar_tildes_texto($valor->name);
+                    $value['project_id']    =  TicketsController::eliminar_tildes_texto($valor->name);
                 }
-                $id_prioridad = (int)$value['priority_id'];
-                $nombrePrioridad = Tickets::Prioridad($id_prioridad);
+                $id_prioridad               = (int)$value['priority_id'];
+                $nombrePrioridad            = Tickets::Prioridad($id_prioridad);
                 foreach($nombrePrioridad as $valor){
                     switch($id_prioridad){
                         Case 1: $value['priority_id'] = "<span class='label label-danger' style='font-size:13px;'><b></b>".$valor->name."</span>";
@@ -480,48 +489,64 @@ class TicketsController extends Controller
                     }
 
                 }
-                $id_estado =(int) $value['status_id'];
-                $nombreEstado = Tickets::Estado($id_estado);
+                $id_estado                  = (int) $value['status_id'];
+                $nombreEstado               = Tickets::Estado($id_estado);
                 foreach($nombreEstado as $valor){
-                    $value['status_id'] = $valor->name;
+                    $value['status_id']     = $valor->name;
                 }
-                $creado = (int)$value['user_id'];
-                $buscarUsuario = Usuarios::BuscarNombre($creado);
+                $creado                     = (int)$value['user_id'];
+                $buscarUsuario              = Usuarios::BuscarNombre($creado);
                 foreach($buscarUsuario as $valor){
                     $value['user_id'] = $valor->name;
                 }
-                $asignado = (int)$value['asigned_id'];
-                $buscarUsuario = Usuarios::BuscarNombre($asignado);
+                $asignado                   = (int)$value['asigned_id'];
+                $buscarUsuario              = Usuarios::BuscarNombre($asignado);
                 foreach($buscarUsuario as $valor){
                     $value['asigned_id'] = $valor->name;
                 }
-                $value['name_user'] = strtoupper($value['name_user']);
-                $id_ticket = $value['id'];
-                $value['historial'] = null;
-                $historialTicket = Tickets::HistorialTicket($id_ticket);
-                $contadorHistorial = count($historialTicket);
+                $value['name_user']         = TicketsController::eliminar_tildes_texto($value['name_user']);
+                $id_ticket                  = $value['id'];
+                $value['historial']         = null;
+                $historialTicket            = Tickets::HistorialTicket($id_ticket);
+                $contadorHistorial          = count($historialTicket);
                 if($contadorHistorial > 0){
                     foreach($historialTicket as $row){
                         $value['historial'] .= "- ". TicketsController::eliminar_tildes_texto($row->observacion)." (".$row->user_id." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                     }
                 }else{
-                    $value['historial'] = null;
+                    $value['historial']     = null;
                 }
             }
 
             $aResultado = json_encode($resultado);
             \Session::put('results', $aResultado);
-            if(empty($consultaReporte)){
-                $verrors = array();
-                array_push($verrors, 'No hay datos que mostrar');
-                return \Response::json(['valido'=>'false','errors'=>$verrors]);
-            }else if(!empty($aResultado)){
-                return \Response::json(['valido'=>'true','results'=>$aResultado]);
+
+            if($consultaReporte){
+                if($aResultado){
+                    return \Response::json(['valido'=>'true','results'=>$aResultado]);
+                }else{
+                    $verrors = array();
+                    array_push($verrors, 'No hay datos que mostrar');
+                    return \Response::json(['valido'=>'false','errors'=>$verrors]);
+                }
             }else{
                 $verrors = array();
                 array_push($verrors, 'No hay datos que mostrar');
                 return \Response::json(['valido'=>'false','errors'=>$verrors]);
             }
+
+
+            // if(empty($consultaReporte)){
+            //     $verrors = array();
+            //     array_push($verrors, 'No hay datos que mostrar');
+            //     return \Response::json(['valido'=>'false','errors'=>$verrors]);
+            // }else if(!empty($aResultado)){
+            //     return \Response::json(['valido'=>'true','results'=>$aResultado]);
+            // }else{
+            //     $verrors = array();
+            //     array_push($verrors, 'No hay datos que mostrar');
+            //     return \Response::json(['valido'=>'false','errors'=>$verrors]);
+            // }
         }else{
             return \Response::json(['valido'=>'false','errors'=>$verrors]);
         }
@@ -529,7 +554,7 @@ class TicketsController extends Controller
     }
 
     public function consultarxTicket(){
-        $data = Request::all();
+        $data = Input::all();
         $reglas = array(
             'ticket'   =>  'required'
         );
@@ -539,7 +564,7 @@ class TicketsController extends Controller
             $verrors[$key] = $messages->first($key);
         }
         if($validador->passes()) {
-            $Ticket         = (int)Request::get('ticket');
+            $Ticket         = (int)Input::get('ticket');
             $consultaReporte = Tickets::BuscarTicket($Ticket);
 
             $resultado = json_decode(json_encode($consultaReporte), true);
@@ -634,7 +659,7 @@ class TicketsController extends Controller
 
     public function reabrirTicket(){
 
-        $data = Request::all();
+        $data = Input::all();
         $reglas = array(
             'id_ticket'             =>  'required',
             'descripcion_ticket'    =>  'required',
@@ -649,15 +674,15 @@ class TicketsController extends Controller
             $verrors[$key] = $messages->first($key);
         }
         if($validador->passes()) {
-            $idTicket = Request::get('id_ticket');
+            $idTicket = Input::get('id_ticket');
             $busqueda = Tickets::BuscarTicket($idTicket);
             if($busqueda){
 
-                $desrcipcion = Request::get('descripcion_ticket');
-                $idCategoria = Request::get('id_categoriaT');
-                $idUsuario = Request::get('id_usuarioT');
-                $idPrioridad = Request::get('id_prioridadT');
-                $idEstado = Request::get('id_estadoT');
+                $desrcipcion = Input::get('descripcion_ticket');
+                $idCategoria = Input::get('id_categoriaT');
+                $idUsuario = Input::get('id_usuarioT');
+                $idPrioridad = Input::get('id_prioridadT');
+                $idEstado = Input::get('id_estadoT');
                 $User = Session::get('IdUsuario');
 
                 $aperturaTicket = Tickets::Apertura($idTicket,$idCategoria,$idUsuario,$idPrioridad,$idEstado,$User,$desrcipcion);
@@ -668,19 +693,19 @@ class TicketsController extends Controller
                 }else{
                     $verrors = array();
                     array_push($verrors, 'Hubo un problema al reabrir el ticket');
-                    return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withRequest();
+                    return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withInput();
                 }
 
             }else{
 
                 $verrors = array();
                 array_push($verrors, 'No se encontro información del ticket '.$idTicket);
-                return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withRequest();
+                return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withInput();
 
             }
 
         }else{
-            return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withRequest();
+            return \Redirect::to('admin/tickets')->withErrors(['errors' => $verrors])->withInput();
         }
 
     }
@@ -802,8 +827,8 @@ class TicketsController extends Controller
         );
 
         $cadena = str_replace(
-            array("'", '‘'),
-            array(' ', ' '),
+            array("'", '‘','a€“'),
+            array(' ', ' ','-'),
             $cadena
         );
 

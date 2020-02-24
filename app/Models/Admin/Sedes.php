@@ -75,4 +75,9 @@ class Sedes extends Model
         $ActualizarArea = DB::Update("UPDATE areas SET name = '$Area', project_id = $Sede, activo = $idActivo WHERE id = $id");
         return $ActualizarArea;
     }
+
+    public static function ListarAreas(){
+        $consultaArea = DB::Select("SELECT * FROM areas");
+        return $consultaArea;
+    }
 }
