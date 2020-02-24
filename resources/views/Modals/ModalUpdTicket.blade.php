@@ -28,11 +28,12 @@
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1" class="col-sm-8 control-label">Descripcion Solicitud</label>
                                     {!! Form::textarea('descripcion_upd',$Descripcion,['class'=>'form-control','id'=>'mod_descripcion','placeholder'=>'Ingrese la descripción de la solicitud','rows'=>'3','readonly']) !!}
-                                    <div align="right"><small class="text-muted" style="font-size: 2.5vh;">Por favor copiar texto sin <b>íconos</b> que vienen en el correo. Gracias</small> <span id="cntDescripHechos" align="right"> </span></div>
+
                                 </div>
                                 <div class="col-md-6">
                                     <label for="exampleInputEmail1" class="col-sm-8 control-label">Agregar Comentario</label>
                                     {!! Form::textarea('comentario',$Comentario,['class'=>'form-control','id'=>'comentario','placeholder'=>'Ingrese el comentario sobre la gestión del ticket','rows'=>'3']) !!}
+                                    <div align="right"><small class="text-muted" style="font-size: 2.5vh;">Por favor copiar texto sin <b>íconos</b>. Gracias</small> <span id="cntDescripHechos" align="right"> </span></div>
                                 </div>
                             </div>
                         </div>
