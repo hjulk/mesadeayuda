@@ -179,7 +179,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-success">Crear Ingreso</button>
+                <button type="submit" class="btn btn-success">Actualizar Ingreso</button>
             </div>
             {!!  Form::close() !!}
 

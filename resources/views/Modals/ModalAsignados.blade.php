@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-sm-3">
                             <label class="control-label col-sm-12" for="fname">Sede:</label>
-                            {!! Form::select('sede',$Sedes,null,['class'=>'form-control','id'=>'sede','onchange'=>'Area();','required']) !!}
+                            {!! Form::select('sede',$Sede,null,['class'=>'form-control','id'=>'sede','onchange'=>'Area();','required']) !!}
                         </div>
                         <div class="col-sm-3">
                             <label class="control-label col-sm-12" for="fname">Área / Dependencia:</label>
