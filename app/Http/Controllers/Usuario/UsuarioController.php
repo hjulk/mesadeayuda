@@ -317,7 +317,7 @@ class UsuarioController extends Controller
             'nombre_usuario'    => 'required',
             'description'       => 'required',
             'telefono_usuario'  => 'required',
-            'correo_usuario'    => 'required',
+            'correo_usuario'    => 'required|regex:/^.+@.+;.+$/i',
             'project_id'        => 'required',
             'area'              => 'required'
         ]);
