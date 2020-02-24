@@ -100,7 +100,7 @@ class InventarioController extends Controller
                             $extension          = $file->getClientOriginalExtension();
                             $name               = $file->getClientOriginalName();
                             $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                            $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                            $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                             $filename           = 'Evidencia Equipo Movil No. '.$idEquipoMovil.'.'.$extension;
                             $uploadSuccess      = $file->move($destinationPath, $filename);
                             $archivofoto        = file_get_contents($uploadSuccess);
@@ -173,7 +173,7 @@ class InventarioController extends Controller
             $NombreAsignado     = $request->nombre_asignado_upd;
             $EstadoEquipo       = $request->estado_upd;
             $idEquipoMovil      = $request->idEM;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
             if($request->desvincular){
                 $Desvincular = 1;
             }else{
@@ -219,7 +219,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Equipo Movil No. '.$idEquipoMovil.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -317,7 +317,7 @@ class InventarioController extends Controller
                             $extension          = $file->getClientOriginalExtension();
                             $name               = $file->getClientOriginalName();
                             $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                            $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                            $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                             $filename           = 'Evidencia Linea No. '.$idEquipoMovil.'.'.$extension;
                             $uploadSuccess      = $file->move($destinationPath, $filename);
                             $archivofoto        = file_get_contents($uploadSuccess);
@@ -391,7 +391,7 @@ class InventarioController extends Controller
             $Personal           = $request->personal_upd;
             $Estado             = $request->estado_upd;
             $IdLineaMovil       = $request->idLM;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
 
             $ActualizacionLineaMovil = Inventario::ActualizarLineaMovil($NroLinea,$FechaAdquisicion,$Serial,$Activo,$Proveedor,$Plan,$PtoCargo,$Cc,$Area,$Personal,$Estado,$creadoPor,$IdLineaMovil);
 
@@ -408,7 +408,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Linea No. '.$IdLineaMovil.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -484,7 +484,7 @@ class InventarioController extends Controller
                             $extension          = $file->getClientOriginalExtension();
                             $name               = $file->getClientOriginalName();
                             $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                            $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                            $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                             $filename           = 'Evidencia Equipo No. '.$idEquipo.'.'.$extension;
                             $uploadSuccess      = $file->move($destinationPath, $filename);
                             $archivofoto        = file_get_contents($uploadSuccess);
@@ -541,7 +541,7 @@ class InventarioController extends Controller
             $DiscoDuro          = $request->disco_duro_upd;
             $MemoriaRam         = $request->memoria_ram_upd;
             $EstadoEquipo       = $request->estado_upd;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
             $IdEquipo           = $request->idE;
 
             $ActualizarEquipo   = Inventario::ActualizarEquipo($TipoEquipo,$TipoIngreso,$EmpresaRenting,$FechaAdquisicion,$Serial,$Marca,$Procesador,$VelProcesador,$DiscoDuro,$MemoriaRam,$EstadoEquipo,$creadoPor,$IdEquipo);
@@ -556,7 +556,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Equipo No. '.$IdEquipo.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -647,7 +647,7 @@ class InventarioController extends Controller
                                 $extension          = $file->getClientOriginalExtension();
                                 $name               = $file->getClientOriginalName();
                                 $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                                $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                                $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                                 $filename           = 'Evidencia '.$evidencia.' No. '.$idPeriferico.'.'.$extension;
                                 $uploadSuccess      = $file->move($destinationPath, $filename);
                                 $archivofoto        = file_get_contents($uploadSuccess);
@@ -700,7 +700,7 @@ class InventarioController extends Controller
             $Marca              = $request->marca_upd;
             $Tamano             = $request->tamano_upd;
             $Estado             = (int)$request->estado_upd;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
             $IdPeriferico       = (int)$request->idP;
 
             $ActualizarPeriferico = Inventario::ActualizarPeriferico($TipoPeriferico,$TipoIngreso,$EmpresaRent,$FechaAdquisicion,$Serial,$Marca,$Tamano,$Estado,$creadoPor,$IdPeriferico);
@@ -733,7 +733,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia '.$evidencia.' No. '.$IdPeriferico.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -809,7 +809,7 @@ class InventarioController extends Controller
                             $extension          = $file->getClientOriginalExtension();
                             $name               = $file->getClientOriginalName();
                             $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                            $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                            $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                             $filename           = 'Evidencia Consumible No. '.$idConsumible.'.'.$extension;
                             $uploadSuccess      = $file->move($destinationPath, $filename);
                             $archivofoto        = file_get_contents($uploadSuccess);
@@ -865,7 +865,7 @@ class InventarioController extends Controller
             $CompaRef               = $request->compa_ref_upd;
             $CompaMod               = $request->compa_ref_upd;
             $Estado                 = (int)$request->estado_upd;
-            $Comentario             = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario             = Funciones::eliminar_tildes_texto($request->comentario);
             $IdConsumible           = (int)$request->idC;
             $ActualizarConsumible   = Inventario::ActualizarConsumible($TipoConsumible,$TipoIngreso,$EmpresaRent,$FechaAdquisicion,$Serial,$Marca,$Modelo,$CompaRef,$CompaMod,$Estado,$creadoPor,$IdConsumible);
             if($ActualizarConsumible){
@@ -878,7 +878,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Consumible No. '.$IdConsumible.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -952,7 +952,7 @@ class InventarioController extends Controller
                             $extension          = $file->getClientOriginalExtension();
                             $name               = $file->getClientOriginalName();
                             $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                            $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                            $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                             $filename           = 'Evidencia Impresora No. '.$idImpresora.'.'.$extension;
                             $uploadSuccess      = $file->move($destinationPath, $filename);
                             $archivofoto        = file_get_contents($uploadSuccess);
@@ -1007,7 +1007,7 @@ class InventarioController extends Controller
             $Ip                 = $request->ip_upd;
             $IdConsumible       = (int)$request->id_consumible_upd;
             $Estado             = (int)$request->estado_upd;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
             $IdImpresora        = (int)$request->idI;
             $EstadoConsumible   = Inventario::EstadoConsumible($IdConsumible);
             $BuscarConsumible   = Inventario::BuscarConsumibleID($IdConsumible,$IdImpresora);
@@ -1044,7 +1044,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Impresora No. '.$IdImpresora.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -1144,11 +1144,11 @@ class InventarioController extends Controller
             // }else{
             //     $Area           = 'SIN AREA';
             // }
-            $NombreAsignado     = InventarioController::eliminar_tildes_texto($request->nombre_asignado);
-            $Cargo              = InventarioController::eliminar_tildes_texto($request->cargo);
+            $NombreAsignado     = Funciones::eliminar_tildes_texto($request->nombre_asignado);
+            $Cargo              = Funciones::eliminar_tildes_texto($request->cargo);
             $Cedula             = $request->cedula;
             $Telefono           = $request->telefono;
-            $Correo             = InventarioController::editar_correo($request->correo);
+            $Correo             = Funciones::editar_correo($request->correo);
             if($request->ticket){
                 $Ticket         = (int)$request->ticket;
             }else{
@@ -1174,7 +1174,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Asignacion No. '.$IdAsignado.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -1257,11 +1257,11 @@ class InventarioController extends Controller
             }else{
                 $Area           = 'SIN AREA';
             }
-            $NombreAsignado     = InventarioController::eliminar_tildes_texto($request->nombre_asignado_upd);
-            $Cargo              = InventarioController::eliminar_tildes_texto($request->cargo_upd);
+            $NombreAsignado     = Funciones::eliminar_tildes_texto($request->nombre_asignado_upd);
+            $Cargo              = Funciones::eliminar_tildes_texto($request->cargo_upd);
             $Cedula             = $request->cedula_upd;
             $Telefono           = $request->telefono_upd;
-            $Correo             = InventarioController::editar_correo($request->correo_upd);
+            $Correo             = Funciones::editar_correo($request->correo_upd);
             if($request->ticket_upd){
                 $Ticket         = (int)$request->ticket_upd;
             }else{
@@ -1269,7 +1269,7 @@ class InventarioController extends Controller
             }
             $FechaAsignacion    = date('Y-m-d H:i:s', strtotime($request->fecha_asignacion_upd));
             $EstadoAsignado     = (int)$request->estado_upd;
-            $Comentario         = InventarioController::eliminar_tildes_texto($request->comentario);
+            $Comentario         = Funciones::eliminar_tildes_texto($request->comentario);
             $IdAsignado         = (int)$request->idA;
 
             $ActualizarAsignado = Inventario::ActualizarAsignado($TipoEquipo,$IdEquipo,$Mouse,$Pantalla,$Teclado,$Cargador,$TipoGuaya,$IdGuaya,$CodeGuaya,
@@ -1284,7 +1284,7 @@ class InventarioController extends Controller
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = 'Evidencia Asignacion No. '.$IdAsignado.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -1304,59 +1304,5 @@ class InventarioController extends Controller
         }
     }
 
-    public static function editar_correo($nombrearchivo){
 
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array(' ',','),
-            array('',';'),
-            $cadena
-        );
-
-        return $cadena;
-    }
-
-    public static function eliminar_tildes_texto($nombrearchivo){
-
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array('ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä','Ã¡'),
-            array('a', 'a', 'a', 'A', 'A', 'A', 'A','á'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array('ë', 'ê', 'É', 'È', 'Ê', 'Ë','Ã©'),
-            array('e', 'e', 'E', 'E', 'E', 'E','é'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ï', 'î', 'Í', 'Ì', 'Ï', 'Î','Ã­'),
-            array('i', 'i', 'I', 'I', 'I', 'I','í'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô','Ã³','Ã“'),
-            array('o', 'o', 'O', 'O', 'O', 'O','ó','Ó'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ü', 'û', 'Ú', 'Ù', 'Û', 'Ü','Ãº'),
-            array('u', 'u', 'U', 'U', 'U', 'U','ú'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ç', 'Ç','Ã±','Ã‘'),
-            array('c', 'C','ñ','Ñ'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array("'", '‘'),
-            array(' ', ' '),
-            $cadena
-        );
-
-        return $cadena;
-    }
 }

@@ -23,7 +23,8 @@
                                     </div>
                                     <div class="col-md-4">
                                         <label class="control-label col-sm-12" for="fname">Correo Coorporativo:</label>
-                                        {!! Form::email('correo_usuario',null,['class'=>'form-control','id'=>'correo_usuario','placeholder'=>'Correo electrónico corporativo','required']) !!}
+                                        {!! Form::text('correo_usuario',null,['class'=>'form-control','id'=>'correo_usuario','placeholder'=>'Correo electrónico corporativo','required']) !!}
+                                        <div align="right"><small class="text-muted" style="font-size: 2.1vh;">Separar correos por <b>';'</b> y <b>no dejar espacios</b></small> <span id="cntDescripHechos" align="right"> </span></div>
                                     </div>
                                 </div>
                             </div>

@@ -167,11 +167,11 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="exampleInputEmail1" class="col-sm-12 control-label">Prioridad</label>
-                                {!! Form::select('prioridad',$Prioridad,null,['class'=>'form-control','id'=>'prioridad','required']) !!}
+                                {!! Form::select('prioridad',$Prioridad,null,['class'=>'form-control','id'=>'prioridad']) !!}
                             </div>
                             <div class="col-md-3">
                                 <label for="exampleInputEmail1" class="col-sm-12 control-label">Estado</label>
-                                {!! Form::select('estado',$Estado,null,['class'=>'form-control','id'=>'estado','required']) !!}
+                                {!! Form::select('estado',$Estado,null,['class'=>'form-control','id'=>'estado']) !!}
                             </div>
                         </div>
                     </div>
@@ -478,7 +478,7 @@
                         for (index in ListUsuario) {
                             select.options[select.options.length] = new Option(ListUsuario[index], index);
                         }
-                        document.ready = document.getElementById("area").value = '';
+
                     }
 
                 }

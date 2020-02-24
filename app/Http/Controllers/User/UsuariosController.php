@@ -3,16 +3,20 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Funciones;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use App\Models\HelpDesk\Tickets;
 use App\Models\Admin\Sedes;
 use App\Models\Admin\Usuarios;
 use App\Http\Requests\Validaciones;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 use Monolog\Handler\ZendMonitorHandler;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Admin\Activo;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 
 class UsuariosController extends Controller
 {
@@ -125,12 +129,11 @@ class UsuariosController extends Controller
         return view('user.profile',['Contrasena' => null,'RContrasena' => null]);
     }
 
-    public function actualizarUsuario(){
-        $data       = Request::all();
-        $Contrasena = Request::get('password');
-        $RPassword  = Request::get('repeat_password');
+    public function actualizarUsuario(Request $request){
+        $Contrasena = $request->password;
+        $RPassword  = $request->repeat_password;
         $idUsuario  = Session::get('IdUsuario');
-        $creadoPor  = (int)\Session::get('IdUsuario');
+        $creadoPor  = Session::get('IdUsuario');
         $infoUsario = Usuarios::BuscarNombre($idUsuario);
         foreach($infoUsario as $valor){
             $nombreUsuario  = $valor->nombre;
@@ -142,8 +145,8 @@ class UsuariosController extends Controller
         if($Contrasena === $RPassword){
             $destinationPath = null;
             $filename        = null;
-            if (Request::hasFile('profile_pic')) {
-                $file            = Request::file('profile_pic');
+            if ($request->hasFile('profile_pic')) {
+                $file            = $request->file('profile_pic');
                 $destinationPath = public_path().'/assets/dist/img/profiles';
                 $extension       = $file->getClientOriginalExtension();
                 $nombrearchivo   = str_replace(".", "_", $userName);
@@ -154,8 +157,8 @@ class UsuariosController extends Controller
                 $filename = $nombrefoto;
             }
             $NombreFoto     = $filename;
-            if(Request::get('password')){
-                if(Request::get('repeat_password')){
+            if($request->password){
+                if($request->repeat_password){
                     $Password     = hash('sha512', $Contrasena);
                 }
             }else{
@@ -170,13 +173,13 @@ class UsuariosController extends Controller
             }else{
                 $verrors = array();
                 array_push($verrors, 'Hubo un problema al actualizar la contraseña');
-                return \Redirect::to('user/profile')->withErrors(['errors' => $verrors])->withRequest();
+                return Redirect::to('user/profile')->withErrors(['errors' => $verrors])->withRequest();
             }
 
         }else{
             $verrors = array();
             array_push($verrors, 'Las contraseñas no coinciden');
-            return \Redirect::to('user/profile')->withErrors(['errors' => $verrors])->withRequest();
+            return Redirect::to('user/profile')->withErrors(['errors' => $verrors])->withRequest();
         }
 
 
@@ -215,7 +218,7 @@ class UsuariosController extends Controller
             $IdSede = (int)$row->id_sede;
             $BuscarSede = Sedes::BuscarSedeID($IdSede);
             foreach($BuscarSede as $value){
-                $ListarTurnos[$cont]['sede'] = $value->name;
+                $ListarTurnos[$cont]['sede'] = Funciones::eliminar_tildes_texto($value->name);
             }
             $ListarTurnos[$cont]['id_horario']      = (int)$row->id_horario;
             $IdHorario = (int)$row->id_horario;
@@ -238,7 +241,7 @@ class UsuariosController extends Controller
         $Sede = array();
         $Sede[''] = 'Seleccione: ';
         foreach ($ListaSede as $row){
-            $Sede[$row->id] = $row->name;
+            $Sede[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
 
         $ListaAgente     = Usuarios::ListarUsuariosTurno();

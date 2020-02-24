@@ -22,6 +22,7 @@
                         <div class="col-md-3">
                             <label for="exampleInputEmail1">Correo Electrónico</label>
                             {!! Form::email('email',null,['class'=>'form-control','id'=>'email','placeholder'=>'Correo Electrónico']) !!}
+
                         </div>
                         <div class="col-md-3">
                             <label for="exampleInputEmail1">Cargo</label>
@@ -37,11 +38,11 @@
                         </div>
                         <div class="col-md-3">
                             <label for="exampleInputEmail1">Sede</label>
-                            {!! Form::select('sede',$Sede,null,['class'=>'form-control','id'=>'sede','onchange'=>'Area();','required']) !!}
+                            {!! Form::select('sede',$Sede,null,['class'=>'form-control','id'=>'sede','onchange'=>'Area();']) !!}
                         </div>
                         <div class="col-md-3">
                             <label for="exampleInputEmail1">Area</label>
-                            {!! Form::select('area',$Area,null,['class'=>'form-control','id'=>'area','required']) !!}
+                            {!! Form::select('area',$Area,null,['class'=>'form-control','id'=>'area']) !!}
                         </div>
                         <div class="col-md-3">
                             <label for="exampleInputFile">Foto</label>
@@ -148,9 +149,8 @@
                         for (index in ListUsuario) {
                             select.options[select.options.length] = new Option(ListUsuario[index], index);
                         }
-                        document.ready = document.getElementById("mod_area").value = '';
-                    }
 
+                    }
 
                 }
             });

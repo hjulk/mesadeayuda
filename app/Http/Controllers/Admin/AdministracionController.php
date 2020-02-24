@@ -9,6 +9,7 @@ use App\Models\Admin\Usuarios;
 use App\Models\Admin\Roles;
 use App\Models\HelpDesk\Inventario;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\Funciones;
 
 class AdministracionController extends Controller
 {
@@ -177,7 +178,7 @@ class AdministracionController extends Controller
             $contadorGestionS = count($buscarGestionSede);
             $contGS = 0;
             foreach($buscarGestionSede as $consulta){
-                    $resultado_gestionS[$contGS]['nombre']          = AdministracionController::eliminar_tildes_texto($consulta->nombre_sede);
+                    $resultado_gestionS[$contGS]['nombre']          = Funciones::eliminar_tildes_texto($consulta->nombre_sede);
                     $resultado_gestionS[$contGS]['incidentes']      = $consulta->incidentes;
                     $resultado_gestionS[$contGS]['requerimientos']  = $consulta->requerimientos;
 
@@ -327,48 +328,6 @@ class AdministracionController extends Controller
                                             'Calificaciones' => $ListarCalificaciones]);
     }
 
-    public static function eliminar_tildes_texto($nombrearchivo){
 
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array('ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä','Ã¡'),
-            array('a', 'a', 'a', 'A', 'A', 'A', 'A','á'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array('ë', 'ê', 'É', 'È', 'Ê', 'Ë','Ã©'),
-            array('e', 'e', 'E', 'E', 'E', 'E','é'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ï', 'î', 'Í', 'Ì', 'Ï', 'Î','Ã­'),
-            array('i', 'i', 'I', 'I', 'I', 'I','í'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô','Ã³','Ã“'),
-            array('o', 'o', 'O', 'O', 'O', 'O','ó','Ó'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ü', 'û', 'Ú', 'Ù', 'Û', 'Ü','Ãº'),
-            array('u', 'u', 'U', 'U', 'U', 'U','ú'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ç', 'Ç','Ã±','Ã‘'),
-            array('c', 'C','ñ','Ñ'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array("'", '‘','a€“'),
-            array(' ', ' ','-'),
-            $cadena
-        );
-
-        return $cadena;
-    }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Funciones;
 use App\Models\HelpDesk\Inventario;
 Use App\Models\Admin\Sedes;
 Use App\Models\Admin\Usuarios;
@@ -13,7 +14,7 @@ class InventarioController extends Controller
     public function TipoIngreso(){
         $ListaTipoIngreso = Inventario::ListarTipoIngreso();
         $TipoIngreso  = array();
-        $TipoIngreso[''] = 'Seleccione: ';
+        // $TipoIngreso[''] = 'Seleccione: ';
         foreach ($ListaTipoIngreso as $row){
             $TipoIngreso[$row->id] = $row->name;
         }
@@ -23,7 +24,7 @@ class InventarioController extends Controller
     public function TipoEstado(){
         $ListarEstado = Inventario::ListarEstadoEquipos();
         $EstadoEquipo  = array();
-        $EstadoEquipo[''] = 'Seleccione: ';
+        // $EstadoEquipo[''] = 'Seleccione: ';
         foreach ($ListarEstado as $row){
             $EstadoEquipo[$row->id] = $row->name;
         }
@@ -61,8 +62,8 @@ class InventarioController extends Controller
             $EquiposMoviles[$contEM]['modelo']          = $value->modelo;
             $EquiposMoviles[$contEM]['IMEI']            = $value->IMEI;
             $EquiposMoviles[$contEM]['capacidad']       = $value->capacidad;
-            $EquiposMoviles[$contEM]['usuario']         = $value->usuario;
-            $EquiposMoviles[$contEM]['area']            = $value->area;
+            $EquiposMoviles[$contEM]['usuario']         = Funciones::eliminar_tildes_texto($value->usuario);
+            $EquiposMoviles[$contEM]['area']            = Funciones::eliminar_tildes_texto($value->area);
             $EquiposMoviles[$contEM]['linea']           = $value->linea;
             $EquiposMoviles[$contEM]['estado_equipo']   = $value->estado_equipo;
             $EquiposMoviles[$contEM]['created_at']      = date('d/m/Y h:i A', strtotime($value->created_at));
@@ -71,7 +72,7 @@ class InventarioController extends Controller
             $IdTipoEquipo   = (int)$value->tipo_equipo;
             $TipoEquipo     = Inventario::BuscarEquipoId($IdTipoEquipo);
             foreach($TipoEquipo as $row){
-                $EquiposMoviles[$contEM]['tipoEquipo']  = $row->name;
+                $EquiposMoviles[$contEM]['tipoEquipo']  = Funciones::eliminar_tildes_texto($row->name);
             }
 
             $IdLinea        = (int)$value->linea;
@@ -126,7 +127,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $EquiposMoviles[$contEM]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $EquiposMoviles[$contEM]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $EquiposMoviles[$contEM]['historial'] = null;
@@ -196,7 +197,7 @@ class InventarioController extends Controller
             $LineasMoviles[$contLM]['fecha_ingreso']    = date('d/m/Y', strtotime($value->fecha_ingreso));
             $LineasMoviles[$contLM]['pto_cargo']        = $value->pto_cargo;
             $LineasMoviles[$contLM]['cc']               = $value->cc;
-            $LineasMoviles[$contLM]['area']             = $value->area;
+            $LineasMoviles[$contLM]['area']             = Funciones::eliminar_tildes_texto($value->area);
             $LineasMoviles[$contLM]['personal']         = $value->personal;
             $LineasMoviles[$contLM]['estado_equipo']    = $value->estado_equipo;
             $LineasMoviles[$contLM]['created_at']       = date('d/m/Y h:i A', strtotime($value->created_at));
@@ -251,7 +252,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $LineasMoviles[$contLM]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $LineasMoviles[$contLM]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $LineasMoviles[$contLM]['historial'] = null;
@@ -371,7 +372,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $Equipos[$contD]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $Equipos[$contD]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $Equipos[$contD]['historial'] = null;
@@ -497,7 +498,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $Perifericos[$cont]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $Perifericos[$cont]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $Perifericos[$cont]['historial'] = null;
@@ -611,7 +612,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $Consumibles[$cont]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $Consumibles[$cont]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $Consumibles[$cont]['historial'] = null;
@@ -741,7 +742,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $Impresoras[$cont]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $Impresoras[$cont]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $Impresoras[$cont]['historial'] = null;
@@ -859,9 +860,9 @@ class InventarioController extends Controller
             }
             $Asignados[$cont]['code_guaya']         = $value->code_guaya;
             $Asignados[$cont]['sede']               = (int)$value->sede;
-            $Asignados[$cont]['area']               = $value->area;
-            $Asignados[$cont]['nombre_usuario']     = $value->nombre_usuario;
-            $Asignados[$cont]['cargo_usuario']      = $value->cargo_usuario;
+            $Asignados[$cont]['area']               = Funciones::eliminar_tildes_texto($value->area);
+            $Asignados[$cont]['nombre_usuario']     = Funciones::eliminar_tildes_texto($value->nombre_usuario);
+            $Asignados[$cont]['cargo_usuario']      = Funciones::eliminar_tildes_texto($value->cargo_usuario);
             $Asignados[$cont]['id_usuario']         = $value->id_usuario;
             $Asignados[$cont]['tel_usuario']        = $value->tel_usuario;
             $Asignados[$cont]['correo']             = $value->correo;
@@ -908,7 +909,7 @@ class InventarioController extends Controller
                     foreach($BuscarUsuario as $values){
                         $NombreUser = $values->name;
                     }
-                    $Asignados[$cont]['historial'] .= "- ".$row->comentario." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
+                    $Asignados[$cont]['historial'] .= "- ".Funciones::eliminar_tildes_texto($row->comentario)." (".$NombreUser." - ".date('d/m/Y h:i a', strtotime($row->created)).")\n";
                 }
             }else{
                 $Asignados[$cont]['historial']      = null;
@@ -986,7 +987,7 @@ class InventarioController extends Controller
         $NombreSede[''] = 'Seleccione: ';
         $Sedes  = Sedes::Sedes();
         foreach ($Sedes as $row){
-            $NombreSede[$row->id] = $row->name;
+            $NombreSede[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
         $Marca  = array();
         $Marca[''] = 'Seleccione: ';

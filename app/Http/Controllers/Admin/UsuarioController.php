@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
-use Validator;
+use App\Http\Controllers\Funciones;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Models\Admin\Usuarios;
 use App\Models\Admin\Sedes;
@@ -17,62 +20,57 @@ use Illuminate\Support\Facades\Session;
 
 class UsuarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        $Rol        = Usuarios::Rol();
-        $Categoria  = Usuarios::Categoria();
-        $Activo     = Usuarios::Activo();
-        $NombreRol = array();
-        $NombreRol[''] = 'Seleccione: ';
+    public function index(){
+
+        $Rol            = Usuarios::Rol();
+        $Categoria      = Usuarios::Categoria();
+        $Activo         = Usuarios::Activo();
+        $NombreRol      = array();
+        $NombreRol['']  = 'Seleccione: ';
         foreach ($Rol as $row){
-            $NombreRol[$row->rol_id] = $row->name;
+            $NombreRol[$row->rol_id] = Funciones::eliminar_tildes_texto($row->name);
         }
         $NombreCategoria = array();
         $NombreCategoria[''] = 'Seleccione: ';
         foreach ($Categoria as $row){
-            $NombreCategoria[$row->id] = $row->name;
+            $NombreCategoria[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
-        $NombreActivo = array();
-        $NombreActivo[''] = 'Seleccione: ';
+        $NombreActivo       = array();
+        $NombreActivo['']   = 'Seleccione: ';
         foreach ($Activo as $row){
-            $NombreActivo[$row->id] = $row->name;
+            $NombreActivo[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
 
         $RolAdmin       = Session::get('Rol');
         $CategoriaAdmin = Session::get('Categoria');
 
-        $Usuarios = Usuarios::ListarUsuarios();
-        $UsuariosIndex = array();
+        $Usuarios       = Usuarios::ListarUsuarios();
+        $UsuariosIndex  = array();
         $contU = 0;
         foreach($Usuarios as $value){
-            $UsuariosIndex[$contU]['id'] = $value->id;
-            $UsuariosIndex[$contU]['nombre'] = $value->name;
-            $UsuariosIndex[$contU]['username'] = $value->username;
-            $UsuariosIndex[$contU]['email'] = $value->email;
-            $UsuariosIndex[$contU]['profile_pic'] = $value->profile_pic;
-            $UsuariosIndex[$contU]['fecha_creacion'] = date('d/m/Y h:i A', strtotime($value->created_at));
-            $idrol = $value->rol_id;
-            $UsuariosIndex[$contU]['id_rol'] = $value->rol_id;
-            $idcategoria = $value->category_id;
-            $UsuariosIndex[$contU]['id_categoria'] = $value->category_id;
-            $idactivo = $value->is_active;
-            $UsuariosIndex[$contU]['activo'] = $value->is_active;
-            $nombreRolS = Usuarios::RolID($idrol);
+            $UsuariosIndex[$contU]['id']                = $value->id;
+            $UsuariosIndex[$contU]['nombre']            = Funciones::eliminar_tildes_texto($value->name);
+            $UsuariosIndex[$contU]['username']          = $value->username;
+            $UsuariosIndex[$contU]['email']             = $value->email;
+            $UsuariosIndex[$contU]['profile_pic']       = $value->profile_pic;
+            $UsuariosIndex[$contU]['fecha_creacion']    = date('d/m/Y h:i A', strtotime($value->created_at));
+            $idrol              = $value->rol_id;
+            $UsuariosIndex[$contU]['id_rol']        = $value->rol_id;
+            $idcategoria        = $value->category_id;
+            $UsuariosIndex[$contU]['id_categoria']  = $value->category_id;
+            $idactivo           = $value->is_active;
+            $UsuariosIndex[$contU]['activo']        = $value->is_active;
+            $nombreRolS         = Usuarios::RolID($idrol);
             foreach($nombreRolS as $valor){
-                $UsuariosIndex[$contU]['rol'] = $valor->name;
+                $UsuariosIndex[$contU]['rol']       = $valor->name;
             }
-            $nombreCategoriaS = Usuarios::CategoriaID($idcategoria);
+            $nombreCategoriaS   = Usuarios::CategoriaID($idcategoria);
             foreach($nombreCategoriaS as $valor){
                 $UsuariosIndex[$contU]['categoria'] = $valor->name;
             }
-            $nombreActivoS = Usuarios::ActivoID($idactivo);
+            $nombreActivoS      = Usuarios::ActivoID($idactivo);
             foreach($nombreActivoS as $valor){
-                $UsuariosIndex[$contU]['estado'] = $valor->name;
+                $UsuariosIndex[$contU]['estado']    = $valor->name;
             }
             $contU++;
         }
@@ -83,17 +81,17 @@ class UsuarioController extends Controller
     }
 
     public function usuarioFinal(){
-        $NombreArea = array();
+        $NombreArea     = array();
         $NombreArea[''] = 'Seleccione: ';
-        $NombreSede = array();
+        $NombreSede     = array();
         $NombreSede[''] = 'Seleccione: ';
-        $Sedes  = Sedes::Sedes();
+        $Sedes          = Sedes::Sedes();
         foreach ($Sedes as $row){
-            $NombreSede[$row->id] = $row->name;
+            $NombreSede[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
-        $Activo     = Usuarios::Activo();
-        $NombreActivo = array();
-        $NombreActivo[''] = 'Seleccione: ';
+        $Activo             = Usuarios::Activo();
+        $NombreActivo       = array();
+        $NombreActivo['']   = 'Seleccione: ';
         foreach ($Activo as $row){
             $NombreActivo[$row->id] = $row->name;
         }
@@ -102,7 +100,7 @@ class UsuarioController extends Controller
         $contUF         = 0;
         foreach($Usuarios as $value){
             $UsuariosFinal[$contUF]['id']               = (int)$value->id;
-            $UsuariosFinal[$contUF]['nombre']           = $value->nombre;
+            $UsuariosFinal[$contUF]['nombre']           = Funciones::eliminar_tildes_texto($value->nombre);
             $UsuariosFinal[$contUF]['username']         = $value->username;
             $UsuariosFinal[$contUF]['email']            = $value->email;
             $UsuariosFinal[$contUF]['cargo']            = $value->cargo;
@@ -116,57 +114,49 @@ class UsuarioController extends Controller
             $UsuariosFinal[$contUF]['activo']           = $value->activo;
             $NombreSedeU    = Sedes::BuscarSedeID($idSede);
             foreach($NombreSedeU as $valor){
-                $UsuariosFinal[$contUF]['nombresede']   = $valor->name;
+                $UsuariosFinal[$contUF]['nombresede']   = Funciones::eliminar_tildes_texto($valor->name);
             }
             $NombreAreaU    = Sedes::BuscarAreaId($idArea);
             foreach($NombreAreaU as $valor){
-                $UsuariosFinal[$contUF]['nombrearea']   = $valor->name;
+                $UsuariosFinal[$contUF]['nombrearea']   = Funciones::eliminar_tildes_texto($valor->name);
             }
             $NombreActivoU  = Usuarios::ActivoID($idactivo);
             foreach($NombreActivoU as $valor){
-                $UsuariosFinal[$contUF]['estado']        = $valor->name;
+                $UsuariosFinal[$contUF]['estado']       = $valor->name;
             }
             $contUF++;
         }
-        // dd($UsuariosFinal);
         return view('admin.usuarioFinal',['Area' => $NombreArea,'Sede' => $NombreSede, 'UsuarioFinal' => $UsuariosFinal,
                                             'Activo' => $NombreActivo]);
     }
 
-    public function inicio()
-    {
-        return view('admin.login');
-    }
+    public function crearUsuario(Request $request){
 
-    public function crearUsuario(){
-
-        $data = Request::all();
         $creadoPor          = (int)Session::get('IdUsuario');
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombre_usuario'    =>  'required',
             'username'          =>  'required',
             'email'             =>  'required|email',
             'password'          =>  'required',
             'id_rol'            =>  'required',
             'id_categoria'      =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $nombreUsuario  = Request::get('nombre_usuario');
-            $userName       = Request::get('username');
-            $email          = Request::get('email');
-            $password       = Request::get('password');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarios')->withErrors($validator)->withInput();
+        }else{
+
+            $nombreUsuario  = $request->nombre_usuario;
+            $userName       = $request->username;
+            $email          = $request->email;
+            $password       = $request->password;
             $contrasena     = hash('sha512', $password);
-            $idrol          = Request::get('id_rol');
-            $idcategoria    = Request::get('id_categoria');
+            $idrol          = $request->id_rol;
+            $idcategoria    = $request->id_categoria;
             $destinationPath = null;
             $filename        = null;
-            if (Request::hasFile('profile_pic')) {
-                $file            = Request::file('profile_pic');
+            if ($request->hasFile('profile_pic')) {
+                $file            = $request->file('profile_pic');
                 $destinationPath = public_path().'/assets/dist/img/profiles';
                 $extension       = $file->getClientOriginalExtension();
                 $nombrearchivo   = str_replace(".", "_", $userName);
@@ -196,36 +186,32 @@ class UsuarioController extends Controller
                 }
             }
 
-        }else{
-            return Redirect::to('admin/usuarios')->withErrors(['errors' => $verrors])->withRequest();
         }
-
     }
 
-    public function actualizarUsuarioAdmin(){
-        $data = Request::all();
+    public function actualizarUsuarioAdmin(Request $request){
+
         $creadoPor          = (int)Session::get('IdUsuario');
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombre_usuario_amd'    =>  'required',
             'username_amd'          =>  'required',
             'email_amd'             =>  'required|email',
             'id_rol_amd'            =>  'required',
             'id_categoria_amd'      =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarios')->withErrors($validator)->withInput();
+        }else{
+
             $id             = (int)Session::get('IdUsuario');
-            $nombreUsuario  = Request::get('nombre_usuario_amd');
-            $userName       = Request::get('username_amd');
-            $email          = Request::get('email_amd');
-            $password       = Request::get('password_amd');
+            $nombreUsuario  = $request->nombre_usuario_amd;
+            $userName       = $request->username_amd;
+            $email          = $request->email_amd;
+            $password       = $request->password_amd;
             $contrasena     = hash('sha512', $password);
-            $idrol          = Request::get('id_rol_amd');
-            $idcategoria    = Request::get('id_categoria_amd');
+            $idrol          = $request->id_rol_amd;
+            $idcategoria    = $request->id_categoria_amd;
 
 
             if($password){
@@ -241,8 +227,8 @@ class UsuarioController extends Controller
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('profile_pic')) {
-                    $file            = Request::file('profile_pic');
+                if ($request->hasFile('profile_pic')) {
+                    $file            = $request->file('profile_pic');
                     $destinationPath = public_path().'/assets/dist/img/profiles';
                     $extension       = $file->getClientOriginalExtension();
                     $nombrearchivo   = str_replace(".", "_", $userName);
@@ -262,37 +248,34 @@ class UsuarioController extends Controller
                     array_push($verrors, 'Hubo un problema al actualizar el usuario');
                     return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
                 }
-        }else{
-            return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
         }
     }
 
-    public function actualizarUsuario(){
-        $data = Request::all();
+    public function actualizarUsuario(Request $request){
+
         $creadoPor          = (int)Session::get('IdUsuario');
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombre_usuario_upd'    =>  'required',
             'username_upd'          =>  'required',
             'email_upd'             =>  'required|email',
             'id_rol_upd'            =>  'required',
             'id_categoria_upd'      =>  'required',
             'id_activo_upd'         =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $id             = (int)Request::get('idU');
-            $nombreUsuario  = Request::get('nombre_usuario_upd');
-            $userName       = Request::get('username_upd');
-            $email          = Request::get('email_upd');
-            $password       = Request::get('password_upd');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarios')->withErrors($validator)->withInput();
+        }else{
+
+            $id             = (int)$request->idU;
+            $nombreUsuario  = $request->nombre_usuario_upd;
+            $userName       = $request->username_upd;
+            $email          = $request->email_upd;
+            $password       = $request->password_upd;
             $contrasena     = hash('sha512', $password);
-            $idrol          = Request::get('id_rol_upd');
-            $idcategoria    = Request::get('id_categoria_upd');
-            $idactivo       = (int)Request::get('id_activo_upd');
+            $idrol          = $request->id_rol_upd;
+            $idcategoria    = $request->id_categoria_upd;
+            $idactivo       = (int)$request->id_activo_upd;
 
             if($password){
 
@@ -306,8 +289,8 @@ class UsuarioController extends Controller
             }
             $destinationPath = null;
             $filename        = null;
-            if (Request::hasFile('profile_pic_upd')) {
-                $file            = Request::file('profile_pic_upd');
+            if ($request->hasFile('profile_pic_upd')) {
+                $file            = $request->file('profile_pic_upd');
                 $destinationPath = public_path().'/assets/dist/img/profiles';
                 $extension       = $file->getClientOriginalExtension();
                 $nombrearchivo   = str_replace(".", "_", $userName);
@@ -327,36 +310,32 @@ class UsuarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el usuario');
                 return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
             }
-        }else{
-            return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
         }
     }
 
-    public function actualizarUsuarioP(){
-        $data = Request::all();
-        $reglas = array(
+    public function actualizarUsuarioP(Request $request){
+        $validator = Validator::make($request->all(), [
             'nombre_usuario'    =>  'required',
             'username'          =>  'required',
             'email'             =>  'required|email',
             'id_rol'            =>  'required',
             'id_categoria'      =>  'required',
             'id_activo'         =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $id             = (int)Request::get('idUP');
-            $nombreUsuario  = Request::get('nombre_usuario');
-            $userName       = Request::get('username');
-            $email          = Request::get('email');
-            $password       = Request::get('password1');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarios')->withErrors($validator)->withInput();
+        }else{
+
+            $id             = (int)$request->idUP;
+            $nombreUsuario  = $request->nombre_usuario;
+            $userName       = $request->username;
+            $email          = $request->email;
+            $password       = $request->password1;
             $contrasena     = hash('sha512', $password);
-            $idrol          = (int)Request::get('id_rol');
-            $idcategoria    = (int)Request::get('id_categoria');
-            $idactivo       = (int)Request::get('id_activo');
+            $idrol          = (int)$request->id_rol;
+            $idcategoria    = (int)$request->id_categoria;
+            $idactivo       = (int)$request->id_activo;
 
             if($password){
 
@@ -371,8 +350,8 @@ class UsuarioController extends Controller
 
                 $destinationPath = null;
                 $filename        = null;
-                if (Request::hasFile('profile_pic')) {
-                    $file            = Request::file('profile_pic');
+                if ($request->hasFile('profile_pic')) {
+                    $file            = $request->file('profile_pic');
                     $destinationPath = public_path().'/aplicativo/profile_pics';
                     $extension       = $file->getClientOriginalExtension();
                     $nombrearchivo   = str_replace(".", "_", $userName);
@@ -392,40 +371,37 @@ class UsuarioController extends Controller
                     array_push($verrors, 'Hubo un problema al actualizar el usuario');
                     return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
                 }
-        }else{
-            return redirect('admin/usuarios')->withErrors(['errors' => $verrors]);
         }
     }
 
-    public function crearUsuarioFinal(){
-        $data = Request::all();
+    public function crearUsuarioFinal(Request $request){
+
         $creadoPor          = (int)Session::get('IdUsuario');
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombre_usuario'    =>  'required',
             'username'          =>  'required',
             'email'             =>  'required|email',
             'password'          =>  'required',
             'sede'              =>  'required',
             'area'              =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $nombreUsuario  = Request::get('nombre_usuario');
-            $userName       = Request::get('username');
-            $email          = Request::get('email');
-            $Cargo          = Request::get('cargo');
-            $password       = Request::get('password');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarioFinal')->withErrors($validator)->withInput();
+        }else{
+
+            $nombreUsuario  = $request->nombre_usuario;
+            $userName       = $request->username;
+            $email          = $request->email;
+            $Cargo          = $request->cargo;
+            $password       = $request->password;
             $contrasena     = hash('sha512', $password);
-            $Sede           = (int)Request::get('sede');
-            $Area           = (int)Request::get('area');
+            $Sede           = (int)$request->sede;
+            $Area           = (int)$request->area;
             $destinationPath = null;
             $filename        = null;
-            if (Request::hasFile('profile_pic')) {
-                $file            = Request::file('profile_pic');
+            if ($request->hasFile('profile_pic')) {
+                $file            = $request->file('profile_pic');
                 $destinationPath = public_path().'/assets/dist/img/profiles';
                 $extension       = $file->getClientOriginalExtension();
                 $nombrearchivo   = str_replace(".", "_", $userName);
@@ -452,36 +428,33 @@ class UsuarioController extends Controller
                     return Redirect::to('admin/usuarioFinal')->withErrors(['errors' => $verrors])->withRequest();
                 }
             }
-        }else{
-            return redirect('admin/usuarioFinal')->withErrors(['errors' => $verrors]);
         }
     }
 
-    public function actualizarUsuarioFinal(){
-        $data = Request::all();
+    public function actualizarUsuarioFinal(Request $request){
+
         $creadoPor          = (int)Session::get('IdUsuario');
-        $reglas = array(
+        $validator = Validator::make($request->all(), [
             'nombre_usuario_upd'    =>  'required',
             'username_upd'          =>  'required',
             'email_upd'             =>  'required|email',
             'id_activo_upd'         =>  'required'
-        );
-        $validador = Validator::make($data, $reglas);
-        $messages = $validador->messages();
-        foreach ($reglas as $key => $value){
-            $verrors[$key] = $messages->first($key);
-        }
-        if($validador->passes()) {
-            $id             = (int)Request::get('idUF');
-            $nombreUsuario  = Request::get('nombre_usuario_upd');
-            $userName       = Request::get('username_upd');
-            $email          = Request::get('email_upd');
-            $Cargo          = Request::get('cargo_upd');
-            $password       = Request::get('password_upd');
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('admin/usuarioFinal')->withErrors($validator)->withInput();
+        }else{
+
+            $id             = (int)$request->idUF;
+            $nombreUsuario  = $request->nombre_usuario_upd;
+            $userName       = $request->username_upd;
+            $email          = $request->email_upd;
+            $Cargo          = $request->cargo_upd;
+            $password       = $request->password_upd;
             $contrasena     = hash('sha512', $password);
-            $idSede         = (int)Request::get('sede_upd');
-            $idArea         = (int)Request::get('area_upd');
-            $idactivo       = (int)Request::get('id_activo_upd');
+            $idSede         = (int)$request->sede_upd;
+            $idArea         = (int)$request->area_upd;
+            $idactivo       = (int)$request->id_activo_upd;
             if($password){
                 $clave = $contrasena;
             }else{
@@ -508,8 +481,8 @@ class UsuarioController extends Controller
             }
             $destinationPath = null;
             $filename        = null;
-            if (Request::hasFile('profile_pic_upd')) {
-                $file            = Request::file('profile_pic_upd');
+            if ($request->hasFile('profile_pic_upd')) {
+                $file            = $request->file('profile_pic_upd');
                 $destinationPath = public_path().'/assets/dist/img/profiles';
                 $extension       = $file->getClientOriginalExtension();
                 $nombrearchivo   = str_replace(".", "_", $userName);
@@ -528,8 +501,6 @@ class UsuarioController extends Controller
                 array_push($verrors, 'Hubo un problema al actualizar el usuario');
                 return redirect('admin/usuarioFinal')->withErrors(['errors' => $verrors]);
             }
-        }else{
-            return redirect('admin/usuarioFinal')->withErrors(['errors' => $verrors]);
         }
     }
 

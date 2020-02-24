@@ -98,6 +98,10 @@ Reporte Tickets
                                         <label for="exampleInputEmail1" class="col-sm-12 control-label">Sede</label>
                                         {!! Form::select('id_sede',$Sede,null,['class'=>'form-control','id'=>'id_sede']) !!}
                                     </div>
+                                    <div class="col-md-3">
+                                        <label for="exampleInputEmail1" class="col-sm-12 control-label">Area</label>
+                                        {!! Form::select('id_area',$Areas,null,['class'=>'form-control','id'=>'id_area']) !!}
+                                    </div>
                                     <div class="col-md-2">
                                         <label for="exampleInputEmail1" class="col-sm-12 control-label">Fecha Inicio</label>
                                         {!! Form::text('fechaInicio',$FechaInicio,['class'=>'form-control','id'=>'fechaInicio','required']) !!}
@@ -132,7 +136,7 @@ Reporte Tickets
                                         <div class="col-md-12">
                     <table id="reporte" class="display table-striped responsive no-wrap" style="width:100%">
                         <thead style="background: linear-gradient(60deg,rgba(51,101,155,1),rgba(66,132,206,1));color: #ECF0F1;">
-                            <tr>
+                            <tr style="background: linear-gradient(60deg,rgba(51,101,155,1),rgba(66,132,206,1));color: #ECF0F1;">
                                 <th>Ticket</th>
                                 <th>Fecha Creación</th>
                                 <th>Fecha Actualización</th>

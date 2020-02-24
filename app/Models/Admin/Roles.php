@@ -52,7 +52,12 @@ class Roles extends Model
     }
 
     public static function ActualizarRol($id,$nombreRol,$idactivo){
-        $actualizarRol = DB::Update("UPDATE rol SET name = '$nombreRol', activo = $idactivo WHERE rol_id = $id");
+        $actualizarRol = DB::Update('UPDATE rol SET name = ?,activo = ? WHERE rol_id = ?', [$nombreRol,$idactivo,$id]);
+        return $actualizarRol;
+    }
+
+    public static function ActualizarRolActivo($id,$idactivo){
+        $actualizarRol = DB::Update('UPDATE rol SET activo = ? WHERE rol_id = ?', [$idactivo,$id]);
         return $actualizarRol;
     }
 

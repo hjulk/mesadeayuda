@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Redirect;
 
-
 Cache::flush();
 Session::flush();
 Artisan::call('cache:clear');
@@ -27,33 +26,33 @@ Route::post('AccesoUsuario', 'loginController@AccesoUsuario')->name('AccesoUsuar
 // Route::post('nuevaSolicitud', 'TicketsController@nuevaSolicitud')->name('nuevaSolicitud');
 Auth::routes();
 
-// Route::group(['middleware' => 'revalidate'], function () {
+Route::group(['middleware' => 'revalidate'], function () {
     Cache::flush();
-    // Route::group(['middleware' => 'monitoreo'], function () {
-    //     Cache::flush();
-    //     Artisan::call('cache:clear');
+    Route::group(['middleware' => 'monitoreo'], function () {
+        Cache::flush();
+        Artisan::call('cache:clear');
         Route::get('dashboardMonitoreo', 'loginController@dashboardMonitoreo')->name('dashboardMonitoreo');
-    // });
-    // Route::group(['middleware' => 'admin'], function () {
-    //     Cache::flush();
-    //     Artisan::call('cache:clear');
+    });
+    Route::group(['middleware' => 'admin'], function () {
+        Cache::flush();
+        Artisan::call('cache:clear');
         Route::get('admin/dashboard', 'Admin\AdministracionController@dashboard')->name('admin/dashboard');
-    // });
-    // Route::group(['middleware' => 'user'], function () {
-    //     Cache::flush();
-    //     Artisan::call('cache:clear');
+    });
+    Route::group(['middleware' => 'user'], function () {
+        Cache::flush();
+        Artisan::call('cache:clear');
         Route::get('user/dashboard', 'User\UsuariosController@inicio')->name('user/dashboard');
-    // });
-    // Route::group(['middleware' => 'usuarioFinal'], function () {
-    //     Cache::flush();
-    //     Artisan::call('cache:clear');
+    });
+    Route::group(['middleware' => 'usuarioFinal'], function () {
+        Cache::flush();
+        Artisan::call('cache:clear');
         Route::get('usuario/dashboard', 'Usuario\UsuarioController@inicio')->name('usuario/dashboard');
-    // });
+    });
 
 
     // MODULO ADMINISTRACIÓN
 
-    Route::group(['prefix' => 'admin','namespace' => 'Admin'],function(){
+    Route::group(['prefix' => 'admin','namespace' => 'Admin','middleware' => 'admin'],function(){
         Cache::flush();
         Artisan::call('cache:clear');
         Route::get('sedes','SedesController@sedes')->name('sedes');
@@ -107,7 +106,7 @@ Auth::routes();
 
     // MODULO USUARIOS
 
-    Route::group(['prefix' => 'user','namespace' => 'User'],function(){
+    Route::group(['prefix' => 'user','namespace' => 'User','middleware' => 'user'],function(){
         Cache::flush();
         Artisan::call('cache:clear');
         Route::get('tickets','TicketsUserController@tickets')->name('tickets');
@@ -137,7 +136,7 @@ Auth::routes();
         });
     });
 
-    Route::group(['prefix' => 'usuario','namespace' => 'Usuario'],function(){
+    Route::group(['prefix' => 'usuario','namespace' => 'Usuario','middleware' => 'usuarioFinal'],function(){
         Cache::flush();
         Artisan::call('cache:clear');
         Route::get('crearTicket','UsuarioController@inicio')->name('crearTicket');
@@ -196,4 +195,4 @@ Auth::routes();
     Route::get('buscarEquipo', 'InventarioController@buscarEquipo')->name('buscarEquipo');
 
 
-// });
+});

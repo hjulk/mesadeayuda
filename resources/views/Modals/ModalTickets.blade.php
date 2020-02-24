@@ -25,6 +25,7 @@
                     <div class="form-group">
                         <label for="exampleInputEmail1" class="col-sm-12 control-label">Descripcion Solicitud</label>
                         {!! Form::textarea('description',$Descripcion,['class'=>'form-control','id'=>'description','placeholder'=>'Ingrese la descripción de la solicitud','rows'=>'3','required']) !!}
+                        <div align="right"><small class="text-muted" style="font-size: 2.5vh;">Por favor copiar texto sin <b>íconos</b> que vienen en el correo. Gracias</small> <span id="cntDescripHechos" align="right"> </span></div>
                     </div>
                     <div class="form-group">
                         <div class="row">
@@ -34,11 +35,12 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="exampleInputEmail1" class="col-md-5 control-label">Telefóno</label>
-                                {!! Form::text('telefono_usuario',$TelefonoUsuario,['class'=>'form-control','id'=>'telefono_usuario','placeholder'=>'No. de telefóno del reportante','required']) !!}
+                                {!! Form::text('telefono_usuario',$TelefonoUsuario,['class'=>'form-control','id'=>'telefono_usuario','placeholder'=>'No. de telefóno del reportante']) !!}
                             </div>
                             <div class="col-md-4">
                                 <label for="exampleInputEmail1" class="col-sm-5 control-label">Correo</label>
                                 {!! Form::text('correo_usuario',$CorreoUsuario,['class'=>'form-control','id'=>'correo_usuario','placeholder'=>'Correo(s) del reportante','required']) !!}
+                                <div align="right"><small class="text-muted" style="font-size: 2.1vh;">Separar correos por <b>';'</b> y <b>no dejar espacios</b></small> <span id="cntDescripHechos" align="right"> </span></div>
                             </div>
                         </div>
                     </div>
@@ -67,7 +69,7 @@
                             </div>
                             <div class="col-md-3">
                                 <label for="exampleInputEmail1" class="col-sm-5 control-label">Asignado</label>
-                                {!! Form::select('id_usuario',$NombreUsuario,null,['class'=>'form-control','id'=>'id_usuario','required']) !!}
+                                {!! Form::select('id_usuario',$NombreUsuario,null,['class'=>'form-control','id'=>'id_usuario']) !!}
                             </div>
                             <div class="col-md-3">
                                 <label for="exampleInputEmail1" class="col-sm-5 control-label">Estado</label>
@@ -107,37 +109,37 @@
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">No. de Ticket</label>
                             <div class="col-md-3">
-                                {!! Form::number('id_ticket',$Asunto,['class'=>'form-control','id'=>'id_ticket','placeholder'=>'Nro. del Ticket','required']) !!}
+                                {!! Form::number('id_ticket',$Asunto,['class'=>'form-control','id'=>'id_ticket','placeholder'=>'Nro. del Ticket']) !!}
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">Descripcion Apertura</label>
                             <div class="col-md-8">
-                                {!! Form::textarea('descripcion_ticket',$Descripcion,['class'=>'form-control','id'=>'descripcion_ticket','placeholder'=>'Ingrese la descripción de la apertura','rows'=>'3','required']) !!}
+                                {!! Form::textarea('descripcion_ticket',$Descripcion,['class'=>'form-control','id'=>'descripcion_ticket','placeholder'=>'Ingrese la descripción de la apertura','rows'=>'3']) !!}
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">Categoria</label>
                             <div class="col-md-5">
-                                {!! Form::select('id_categoriaT',$NombreCategoria,null,['class'=>'form-control','id'=>'id_categoriaT','onchange'=>'categoriaTFunc();','required']) !!}
+                                {!! Form::select('id_categoriaT',$NombreCategoria,null,['class'=>'form-control','id'=>'id_categoriaT','onchange'=>'categoriaTFunc();']) !!}
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">Asignado</label>
                             <div class="col-md-5">
-                                {!! Form::select('id_usuarioT',$NombreUsuario,null,['class'=>'form-control','id'=>'id_usuarioT','required']) !!}
+                                {!! Form::select('id_usuarioT',$NombreUsuario,null,['class'=>'form-control','id'=>'id_usuarioT']) !!}
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">Estado</label>
                             <div class="col-md-5">
-                                {!! Form::select('id_estadoT',$NombreEstadoA,null,['class'=>'form-control','id'=>'id_estadoT','required']) !!}
+                                {!! Form::select('id_estadoT',$NombreEstadoA,null,['class'=>'form-control','id'=>'id_estadoT']) !!}
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="inputEmail3" class="col-sm-4 control-label">Prioridad</label>
                             <div class="col-md-5">
-                                {!! Form::select('id_prioridadT',$NombrePrioridad,null,['class'=>'form-control','id'=>'id_prioridadT','required']) !!}
+                                {!! Form::select('id_prioridadT',$NombrePrioridad,null,['class'=>'form-control','id'=>'id_prioridadT']) !!}
                             </div>
                         </div>
 
@@ -173,7 +175,7 @@
                         for (index in ListUsuario) {
                             select.options[select.options.length] = new Option(ListUsuario[index], index);
                         }
-                        document.ready = document.getElementById("id_usuario").value = '';
+
                     }
 
                 }
@@ -199,7 +201,7 @@
                         for (index in ListUsuario) {
                             select.options[select.options.length] = new Option(ListUsuario[index], index);
                         }
-                        document.ready = document.getElementById("id_usuarioT").value = '';
+
                     }
 
                 }
@@ -226,7 +228,7 @@
                         for (index in ListUsuario) {
                             select.options[select.options.length] = new Option(ListUsuario[index], index);
                         }
-                        document.ready = document.getElementById("area").value = '';
+
                     }
 
                 }

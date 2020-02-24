@@ -27,7 +27,7 @@ class TicketsController extends Controller{
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
-        $url = TicketsController::BuscarURL($Administrador);
+        $url = Funciones::BuscarURL($Administrador);
         $seleccionado = (int)$request->id_usuario;
         if($seleccionado === ''){
             $verrors = array();
@@ -57,11 +57,11 @@ class TicketsController extends Controller{
         }else{
 
             $idTipo             = (int)$request->kind_id;
-            $Asunto             = TicketsController::eliminar_tildes_texto($request->title);
-            $Descripcion        = TicketsController::eliminar_tildes_texto($request->description);
-            $NombreUsuario      = TicketsController::eliminar_tildes_texto($request->nombre_usuario);
+            $Asunto             = Funciones::eliminar_tildes_texto($request->title);
+            $Descripcion        = Funciones::eliminar_tildes_texto($request->description);
+            $NombreUsuario      = Funciones::eliminar_tildes_texto($request->nombre_usuario);
             $TelefonoUsuario    = $request->telefono_usuario;
-            $CorreUsuario       = TicketsController::editar_correo($request->correo_usuario);
+            $CorreUsuario       = Funciones::editar_correo($request->correo_usuario);
             $IdSede             = (int)$request->project_id;
             $IdArea             = (int)$request->area;
             $BuscarArea         = Sedes::BuscarAreaId($IdArea);
@@ -113,7 +113,7 @@ class TicketsController extends Controller{
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = $nombrearchivo.'_Ticket_'.$ticket.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -192,12 +192,12 @@ class TicketsController extends Controller{
     }
 
     public function actualizarTicket(Request $request){
-       $creadoPor          = (int)Session::get('IdUsuario');
+        $creadoPor          = (int)Session::get('IdUsuario');
         $buscarUsuario      = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador  = (int)$value->rol_id;
         }
-        $url = TicketsController::BuscarURL($Administrador);
+        $url = Funciones::BuscarURL($Administrador);
         $seleccionado = (int)$request->id_usuarioupd;
         if($seleccionado === 0){
             $verrors = array();
@@ -219,11 +219,11 @@ class TicketsController extends Controller{
 
             $idTicket           = (int)$request->idT;
             $idTipo             = (int)$request->id_tipo_upd;
-            $Asunto             = TicketsController::eliminar_tildes_texto($request->asunto_upd);
-            $Descripcion        = TicketsController::eliminar_tildes_texto($request->descripcion_upd);
-            $NombreUsuario      = TicketsController::eliminar_tildes_texto($request->nombre_usuario_upd);
+            $Asunto             = Funciones::eliminar_tildes_texto($request->asunto_upd);
+            $Descripcion        = Funciones::eliminar_tildes_texto($request->descripcion_upd);
+            $NombreUsuario      = Funciones::eliminar_tildes_texto($request->nombre_usuario_upd);
             $TelefonoUsuario    = $request->telefono_usuario_upd;
-            $CorreUsuario       = TicketsController::editar_correo($request->correo_usuario_upd);
+            $CorreUsuario       = Funciones::editar_correo($request->correo_usuario_upd);
             $IdSede             = (int)$request->id_sede_upd;
             $IdArea             = $request->dependencia_upd;
             $Prioridad          = (int)$request->id_prioridad_upd;
@@ -265,7 +265,7 @@ class TicketsController extends Controller{
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = $nombrearchivo.'_Ticket_'.$idTicket.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);
@@ -533,7 +533,7 @@ class TicketsController extends Controller{
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
-        $url = TicketsController::BuscarURL($Administrador);
+        $url = Funciones::BuscarURL($Administrador);
         $validator = Validator::make($request->all(), [
             'nombres'           =>  'required',
             'identificacion'    =>  'required',
@@ -556,9 +556,9 @@ class TicketsController extends Controller{
             $Redes = 0;
             $Infraestructura = 0;
             $Aplicaciones = 0;
-            $Nombres                = TicketsController::eliminar_tildes_texto($request->nombres);
+            $Nombres                = Funciones::eliminar_tildes_texto($request->nombres);
             $Identificacion         = $request->identificacion;
-            $Cargo                  = TicketsController::eliminar_tildes_texto($request->cargo);
+            $Cargo                  = Funciones::eliminar_tildes_texto($request->cargo);
             $Sede                   = (int)$request->sede;
             $BuscarSede             = Sedes::BuscarSedeID($Sede);
             foreach($BuscarSede as $value){
@@ -608,7 +608,7 @@ class TicketsController extends Controller{
             }
 
             if($request->correo_funcionario){
-                $CorreoFuncionario      = TicketsController::editar_correo($request->correo_funcionario);
+                $CorreoFuncionario      = Funciones::editar_correo($request->correo_funcionario);
             }else{
                 $CorreoFuncionario      = 'SIN CORREO';
             }
@@ -979,13 +979,12 @@ class TicketsController extends Controller{
     }
 
     public function crearTicketRecurrente(Request $request){
-        $data           = Request::all();
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
-        $url = TicketsController::BuscarURL($Administrador);
+        $url = Funciones::BuscarURL($Administrador);
         $validator = Validator::make($request->all(), [
             'asunto'        =>  'required',
             'categoria'     =>  'required',
@@ -997,7 +996,7 @@ class TicketsController extends Controller{
             return redirect($url.'/ticketsRecurrentes')->withErrors($validator)->withInput();
         }else{
 
-            $Asunto     = TicketsController::eliminar_tildes_texto($request->asunto);
+            $Asunto     = Funciones::eliminar_tildes_texto($request->asunto);
             $Categoria  = (int)$request->categoria;
             $Prioridad  = (int)$request->prioridad;
             $Tipo       = (int)$request->tipo_usuario;
@@ -1014,13 +1013,12 @@ class TicketsController extends Controller{
     }
 
     public function actualizarTicketRecurrente(Request $request){
-        $data           = Request::all();
         $creadoPor      = (int)Session::get('IdUsuario');
         $buscarUsuario  = Usuarios::BuscarNombre($creadoPor);
         foreach($buscarUsuario as $value){
             $Administrador = (int)$value->rol_id;
         }
-        $url = TicketsController::BuscarURL($Administrador);
+        $url = Funciones::BuscarURL($Administrador);
         $validator = Validator::make($request->all(), [
             'asunto_upd'        =>  'required',
             'categoria_upd'     =>  'required',
@@ -1075,119 +1073,7 @@ class TicketsController extends Controller{
 
     }
 
-    public static function editar_correo($nombrearchivo){
 
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array(' ',','),
-            array('',';'),
-            $cadena
-        );
-
-        return $cadena;
-    }
-
-    public static function eliminar_tildes_texto($nombrearchivo){
-
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array('ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä','Ã¡'),
-            array('a', 'a', 'a', 'A', 'A', 'A', 'A','á'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array('ë', 'ê', 'É', 'È', 'Ê', 'Ë','Ã©'),
-            array('e', 'e', 'E', 'E', 'E', 'E','é'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ï', 'î', 'Í', 'Ì', 'Ï', 'Î','Ã­'),
-            array('i', 'i', 'I', 'I', 'I', 'I','í'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô','Ã³','Ã“'),
-            array('o', 'o', 'O', 'O', 'O', 'O','ó','Ó'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ü', 'û', 'Ú', 'Ù', 'Û', 'Ü','Ãº'),
-            array('u', 'u', 'U', 'U', 'U', 'U','ú'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ç', 'Ç','Ã±','Ã‘'),
-            array('c', 'C','ñ','Ñ'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array("'", '‘'),
-            array(' ', ' '),
-            $cadena
-        );
-
-        return $cadena;
-    }
-
-    public static function eliminar_tildes($nombrearchivo){
-
-        $cadena = $nombrearchivo;
-        $cadena = str_replace(
-            array('á', 'à', 'ä', 'â', 'ª', 'Á', 'À', 'Â', 'Ä','Ã¡'),
-            array('a', 'a', 'a', 'a', 'a', 'A', 'A', 'A', 'A','a'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array('é', 'è', 'ë', 'ê', 'É', 'È', 'Ê', 'Ë','Ã©'),
-            array('e', 'e', 'e', 'e', 'E', 'E', 'E', 'E','e'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('í', 'ì', 'ï', 'î', 'Í', 'Ì', 'Ï', 'Î','Ã­'),
-            array('i', 'i', 'i', 'i', 'I', 'I', 'I', 'I','i'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ó', 'ò', 'ö', 'ô', 'Ó', 'Ò', 'Ö', 'Ô','Ã³'),
-            array('o', 'o', 'o', 'o', 'O', 'O', 'O', 'O','o'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ú', 'ù', 'ü', 'û', 'Ú', 'Ù', 'Û', 'Ü','Ãº'),
-            array('u', 'u', 'u', 'u', 'U', 'U', 'U', 'U','u'),
-            $cadena );
-
-        $cadena = str_replace(
-            array('ñ', 'Ñ', 'ç', 'Ç'),
-            array('n', 'N', 'c', 'C'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array(' ', '-'),
-            array('_', '_'),
-            $cadena
-        );
-
-        $cadena = str_replace(
-            array("'", ''),
-            array('´', ''),
-            $cadena
-        );
-
-        return $cadena;
-    }
-
-    public function BuscarURL($Administrador){
-        if($Administrador === 1){
-            return 'admin';
-        }else{
-            return 'user';
-        }
-    }
 
     public function buscarCategoria(Request $request){
         $id   = $request->id_categoria;
@@ -1195,7 +1081,7 @@ class TicketsController extends Controller{
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
+            $NombreUsuario[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
         return response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
@@ -1208,7 +1094,7 @@ class TicketsController extends Controller{
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->nombre);
+            $NombreUsuario[$row->id] = Funciones::eliminar_tildes_texto($row->nombre);
         }
         return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
@@ -1220,7 +1106,7 @@ class TicketsController extends Controller{
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
+            $NombreUsuario[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
         return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
@@ -1232,7 +1118,7 @@ class TicketsController extends Controller{
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
+            $NombreUsuario[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
         return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
 
@@ -1244,7 +1130,7 @@ class TicketsController extends Controller{
         $buscarUsuario = Sedes::BuscarAreaIdSede($id);
         $NombreUsuario[0] = 'Seleccione: ';
         foreach ($buscarUsuario as $row){
-            $NombreUsuario[$row->id] = TicketsController::eliminar_tildes_texto($row->name);
+            $NombreUsuario[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
         return Response::json(array('valido'=>'true','Usuario'=>$NombreUsuario));
     }
@@ -1307,7 +1193,7 @@ class TicketsController extends Controller{
 
             $idTipo             = (int)$request->kind_id;
 
-            $Descripcion        = TicketsController::eliminar_tildes_texto($request->description);
+            $Descripcion        = Funciones::eliminar_tildes_texto($request->description);
             $NombreUsuario      = $request->nombre_usuario;
             $TelefonoUsuario    = $request->telefono_usuario;
             $CorreUsuario       = $request->correo_usuario;
@@ -1322,7 +1208,7 @@ class TicketsController extends Controller{
             if($idAsunto === 1){
                 $Prioridad      = 2;
                 $Categoria      = 4;
-                $Asunto         = TicketsController::eliminar_tildes_texto($request->title);
+                $Asunto         = Funciones::eliminar_tildes_texto($request->title);
             }else{
                 $buscardatos = Tickets::ListarRecurrentesId($idAsunto);
                 if($buscardatos){
@@ -1334,7 +1220,7 @@ class TicketsController extends Controller{
                 }else{
                     $Prioridad          = 2;
                     $Categoria          = 4;
-                    $Asunto             = TicketsController::eliminar_tildes_texto($request->title);
+                    $Asunto             = Funciones::eliminar_tildes_texto($request->title);
                 }
             }
 
@@ -1367,7 +1253,7 @@ class TicketsController extends Controller{
                         $extension          = $file->getClientOriginalExtension();
                         $name               = $file->getClientOriginalName();
                         $nombrearchivo      = pathinfo($name, PATHINFO_FILENAME);
-                        $nombrearchivo      = TicketsController::eliminar_tildes($nombrearchivo);
+                        $nombrearchivo      = Funciones::eliminar_tildes($nombrearchivo);
                         $filename           = $nombrearchivo.'_Ticket_'.$ticket.'.'.$extension;
                         $uploadSuccess      = $file->move($destinationPath, $filename);
                         $archivofoto        = file_get_contents($uploadSuccess);

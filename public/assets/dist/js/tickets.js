@@ -39,30 +39,29 @@ $(document).ready(function () {
                 selected: "seleccionado"
             }
         },
-        // dom: 'Bfrtip',
-        //                 buttons: [
-        //         {
-        //             extend: 'collection',
-        //             text: 'Exportar',
-        //             buttons: [
-        //                 'copy',
-        //                 'excel',
-        //                 'csv',
-        //                 {extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'LEGAL'},
-        //                 {
-        //                     extend: 'print',
-        //                     customize: function ( win ) {
-        //                         $(win.document.body)
-        //                             .css( 'font-size', '10pt' );
+        dom: 'Bfrtip',
+                        buttons: [
+                {
+                    extend: 'collection',
+                    text: 'Exportar',
+                    buttons: [
+                        'copy',
+                        'excel',
+                        'csv',
+                        {extend: 'pdfHtml5', orientation: 'landscape', pageSize: 'LEGAL'},
+                        {
+                            extend: 'print',
+                            customize: function ( win ) {
+                                $(win.document.body)
+                                    .css( 'font-size', '10pt' );
 
-        //                         $(win.document.body).find( 'table' )
-        //                             .addClass( 'compact' )
-        //                             .css( 'font-size', 'inherit' );
-        //                     }
-        //                 }
-        //             ]
-        //         }]
-
+                                $(win.document.body).find( 'table' )
+                                    .addClass( 'compact' )
+                                    .css( 'font-size', 'inherit' );
+                            }
+                        }
+                    ]
+                }]
 
     });
 
@@ -249,22 +248,22 @@ $(document).ready(function () {
                         rowReorder  : false,
                         order: [[ 0, "desc" ]],
                         columns: [
-                                    { "data": "id" },
-                                    { "data": "created_at" },
-                                    { "data": "updated_at" },
-                                    { "data": "kind_id" },
-                                    { "data": "priority_id" },
-                                    { "data": "status_id" },
-                                    { "data": "user_id" },
-                                    { "data": "asigned_id" },
-                                    { "data": "title" },
-                                    { "data": "name_user" },
-                                    { "data": "tel_user" },
-                                    { "data": "user_email" },
-                                    { "data": "description" },
-                                    { "data": "project_id" },
-                                    { "data": "asigned_id" },
-                                    { "data": "historial" }
+                                    { "title": "Ticket","data": "id" },
+                                    { "title": "Fecha Creación","data": "created_at" },
+                                    { "title": "Fecha Actualización","data": "updated_at" },
+                                    { "title": "Tipo","data": "kind_id" },
+                                    { "title": "Prioridad","data": "priority_id" },
+                                    { "title": "Estado","data": "status_id" },
+                                    { "title": "Creado Por","data": "user_id" },
+                                    { "title": "Asignado A","data": "asigned_id" },
+                                    { "title": "Asunto Ticket","data": "title" },
+                                    { "title": "Nombre Reportante","data": "name_user" },
+                                    { "title": "Telefono Reportante","data": "tel_user" },
+                                    { "title": "Correo Reportante","data": "user_email" },
+                                    { "title": "Descripcion","data": "description" },
+                                    { "title": "Sede","data": "project_id" },
+                                    { "title": "Actualizado Por","data": "asigned_id" },
+                                    { "title": "Historial Ticket","data": "historial" }
                                 ],
                         dom: 'Bfrtip',
                         buttons: [
@@ -352,6 +351,7 @@ $(document).ready(function () {
                         $('#panelResultado').show();
                         $('#reporte').DataTable().destroy();
                         $('#reporte').empty();
+                        $('#reporte thead tr th').addClass('tablasColor');
                         $('#reporte').DataTable({
                             data: Resultado,
                             columnDefs: [
@@ -379,22 +379,22 @@ $(document).ready(function () {
                             rowReorder  : false,
                             order: [[ 0, "desc" ]],
                             columns: [
-                                        { "data": "id" },
-                                        { "data": "created_at" },
-                                        { "data": "updated_at" },
-                                        { "data": "kind_id" },
-                                        { "data": "priority_id" },
-                                        { "data": "status_id" },
-                                        { "data": "user_id" },
-                                        { "data": "asigned_id" },
-                                        { "data": "title" },
-                                        { "data": "name_user" },
-                                        { "data": "tel_user" },
-                                        { "data": "user_email" },
-                                        { "data": "description" },
-                                        { "data": "project_id" },
-                                        { "data": "asigned_id" },
-                                        { "data": "historial" }
+                                { "title": "Ticket","data": "id" },
+                                { "title": "Fecha Creación","data": "created_at" },
+                                { "title": "Fecha Actualización","data": "updated_at" },
+                                { "title": "Tipo","data": "kind_id" },
+                                { "title": "Prioridad","data": "priority_id" },
+                                { "title": "Estado","data": "status_id" },
+                                { "title": "Creado Por","data": "user_id" },
+                                { "title": "Asignado A","data": "asigned_id" },
+                                { "title": "Asunto Ticket","data": "title" },
+                                { "title": "Nombre Reportante","data": "name_user" },
+                                { "title": "Telefono Reportante","data": "tel_user" },
+                                { "title": "Correo Reportante","data": "user_email" },
+                                { "title": "Descripcion","data": "description" },
+                                { "title": "Sede","data": "project_id" },
+                                { "title": "Actualizado Por","data": "asigned_id" },
+                                { "title": "Historial Ticket","data": "historial" }
                                     ],
                             dom: 'Bfrtip',
                             buttons: [

@@ -87,10 +87,10 @@
                         </span>
                     </a>
                     <ul class="treeview-menu">
-                        <li><a href="usuarios"><i class="fa fa-user"></i>Usuarios Soporte</a></li>
-                        <li><a href="usuarioFinal"><i class="fa fa-user-plus"></i>Usuario Final</a></li>
                         <li><a href="roles"><i class="fa fa-user-secret"></i>Roles Y Categoria</a></li>
                         <li><a href="sedes"><i class="fa fa-map"></i>Sedes</a></li>
+                        <li><a href="usuarios"><i class="fa fa-user"></i>Usuarios Soporte</a></li>
+                        <li><a href="usuarioFinal"><i class="fa fa-user-plus"></i>Usuario Final</a></li>
                     </ul>
                 </li>
             @endif
