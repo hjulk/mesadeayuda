@@ -34,6 +34,14 @@ class TicketsController extends Controller{
             array_push($verrors, 'Debe seleccionar un usuario a asignar el ticket');
             return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
         }
+        $CorreoIndex   = Funciones::editar_correo($request->correo_usuario);
+        $findme   = '@';
+        $pos = strpos($CorreoIndex, $findme);
+        if ($pos === false) {
+            $verrors = array();
+            array_push($verrors, 'El correo debe contener la estructura correcta @');
+            return Redirect::to($url.'/tickets')->withErrors(['errors' => $verrors])->withRequest();
+        }
 
         $validator = Validator::make($request->all(), [
             'kind_id'           =>  'required',
@@ -751,7 +759,7 @@ class TicketsController extends Controller{
                 $CapDinamica        = 0;
                 $CapDinamica_desc = 'No';
             }
-            $Observaciones          = $request->observaciones;
+            $Observaciones          = Funciones::eliminar_tildes_texto($request->observaciones);
             $Estado                 = (int)$request->estado;
             $Prioridad              = (int)$request->prioridad;
             $nombrePrioridad        = Tickets::Prioridad($Prioridad);
@@ -919,7 +927,7 @@ class TicketsController extends Controller{
                                 <b>Extensión Telefónica:</b> $ExtensionTel_desc<br>
                                 <b>Conectividad VPN:</b> $Conectividad_desc<br>
                                 <b>Nivel Internet:</b> $AccesoInternet_desc<br>
-                                <b>Sistema 8.5:</b> $App85_desc<br>
+                                <b>Servinté:</b> $App85_desc<br>
                                 <b>Dínamica:</b> $AppDinamica_desc<br>
                                 <b>Otro Aplicativo:</b> $OtroAplicativo<br>
                                 <b>Capacitación 8.5:</b> $Cap85_desc<br>
@@ -1077,7 +1085,7 @@ class TicketsController extends Controller{
 
 
     public function buscarCategoria(Request $request){
-        $id   = $request->id_categoria;
+        $id   = (int)$request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1090,7 +1098,7 @@ class TicketsController extends Controller{
 
     public function buscarCategoriaS(Request $request){
 
-        $id   = $request->id_categoria;
+        $id   = (int)$request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1102,7 +1110,7 @@ class TicketsController extends Controller{
     }
 
     public function buscarCategoriaRepo(Request $request){
-        $id   = $request->id_categoria;
+        $id   = (int)$request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoriaSolicitud($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1114,7 +1122,7 @@ class TicketsController extends Controller{
     }
 
     public function buscarCategoriaUPD(Request $request){
-        $id   = $request->id_categoria;
+        $id   = (int)$request->id_categoria;
         $NombreUsuario = array();
         $buscarUsuario = Usuarios::BuscarXCategoria($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1126,7 +1134,7 @@ class TicketsController extends Controller{
     }
 
     public function buscarArea(Request $request){
-        $id   = $request->id_sede;
+        $id             = (int)$request->id_sede;
         $NombreUsuario = array();
         $buscarUsuario = Sedes::BuscarAreaIdSede($id);
         $NombreUsuario[0] = 'Seleccione: ';
@@ -1178,6 +1186,14 @@ class TicketsController extends Controller{
     }
 
     public function nuevaSolicitud(Request $request){
+        $CorreoIndex    = Funciones::editar_correo($request->correo_usuario);
+        $findme         = '@';
+        $pos            = strpos($CorreoIndex, $findme);
+        if ($pos === false) {
+            $verrors = array();
+            array_push($verrors, 'El correo debe contener la estructura correcta @');
+            return Redirect::to('/crearSolicitud')->withErrors(['errors' => $verrors])->withRequest();
+        }
         $validator = Validator::make($request->all(), [
             'kind_id'           => 'required',
             'nombre_usuario'    => 'required',

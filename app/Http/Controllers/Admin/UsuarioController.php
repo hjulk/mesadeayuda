@@ -85,7 +85,7 @@ class UsuarioController extends Controller
         $NombreArea[''] = 'Seleccione: ';
         $NombreSede     = array();
         $NombreSede[''] = 'Seleccione: ';
-        $Sedes          = Sedes::Sedes();
+        $Sedes          = Sedes::SedesA();
         foreach ($Sedes as $row){
             $NombreSede[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }

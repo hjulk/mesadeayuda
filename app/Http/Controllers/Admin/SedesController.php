@@ -68,7 +68,7 @@ class SedesController extends Controller
 
         $NombreSede = array();
         $NombreSede[''] = 'Seleccione: ';
-        foreach($Sedes as $row){
+        foreach($SedesA as $row){
             $NombreSede[$row->id] = Funciones::eliminar_tildes_texto($row->name);
         }
 
@@ -183,7 +183,7 @@ class SedesController extends Controller
             return redirect('admin/sedes')->withErrors($validator)->withInput();
         }else{
 
-            $id             = (int)$request->dA;
+            $id             = (int)$request->idA;
             $Area           = Funciones::eliminar_tildes_texto($request->nombre_area_upd);
             $Sede           = (int)$request->sede_upd;
             $idActivo       = (int)$request->activo_area;

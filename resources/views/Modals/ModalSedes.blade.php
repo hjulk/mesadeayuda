@@ -158,7 +158,7 @@
     <script>
         function obtener_datos_area(id) {
             var Nombre      = $("#nombre" + id).val();
-            var Activo      = $("#activo" + id).val();
+            var Activo      = $("#activo_area" + id).val();
             var Sede        = $("#project_id" + id).val();
 
             $("#mod_idA").val(id);

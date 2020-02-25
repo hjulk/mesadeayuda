@@ -141,6 +141,7 @@ Route::group(['middleware' => 'revalidate'], function () {
         Artisan::call('cache:clear');
         Route::get('crearTicket','UsuarioController@inicio')->name('crearTicket');
         Route::post('nuevaSolicitud', 'UsuarioController@nuevaSolicitud')->name('nuevaSolicitud');
+        Route::post('crearTicketUsuarioFinal', 'UsuarioController@crearTicketUsuarioFinal')->name('crearTicketUsuarioFinal');
         Route::get('/logout', function() {
             Auth::logout();
             Session::flush();

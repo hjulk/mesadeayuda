@@ -25,6 +25,11 @@ class Sedes extends Model
         return $Sedes;
     }
 
+    public static function AreasA(){
+        $Sedes = DB::Select("SELECT * FROM areas WHERE activo = 1 ORDER BY name");
+        return $Sedes;
+    }
+
     public static function BuscarSedeID($idsede){
         $consultaSedeId = DB::Select("SELECT * FROM project WHERE id = $idsede");
         return $consultaSedeId;

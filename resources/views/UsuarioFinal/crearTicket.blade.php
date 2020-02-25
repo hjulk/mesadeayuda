@@ -34,13 +34,14 @@ Dahsboard
                             </div>
                         </div>
                         <div class="col-md-9">
-                            {{-- <button class="btn btn-primary" data-toggle="modal" data-target="#modal-solicitud"><i class="fa fa-plus-circle"></i>&nbsp;Crear Ticket</button>
-                            <br> --}}
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs pull-right ui-sortable-handle">
                                     <li class=""><a href="#finalizados" data-toggle="tab" aria-expanded="false"><b>Tickets Finalizados</b></a></li>
                                     <li class="active"><a href="#actuales" data-toggle="tab" aria-expanded="true"><b>Tickets Actuales</b></a></li>
                                     <li class="pull-left header"><button class="btn btn-primary" data-toggle="modal" data-target="#modal-solicitud"><i class="fa fa-plus-circle"></i>&nbsp;Crear Ticket</button></li>
+                                    @if(Session::get('Area') === 6)
+                                    <li class="pull-left header"><button class="btn btn-success" data-toggle="modal" data-target="#modal-solicitud-usuario"><i class="fa fa-plus-circle"></i>&nbsp;Requerimiento de usuarios y/o equipos</button></li>
+                                    @endif
                                 </ul>
                             </div>
                             <div class="tab-content no-padding">
@@ -188,6 +189,22 @@ Dahsboard
             }
         }
     </script>
+    <script>
+        $(function () {
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            var time = today.getHours() + ":" + today.getMinutes();
+            var dateTime = date+' '+time;
+            $('#fechaIngresoT').datepicker({
+                autoclose: true,
+                language: 'es',
+                todayBtn: true,
+                format: 'dd-mm-yyyy',
+                orientation: 'bottom auto',
+                endDate: '+0d'
+            });
+        });
+    </script>
 
     <script>
         function Area() {
@@ -216,6 +233,7 @@ Dahsboard
             });
         }
     </script>
+
     <script type="text/javascript">
         var Asunto = new Array();
         @if($Asuntos)

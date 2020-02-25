@@ -82,7 +82,7 @@ Sedes
                                         <input type="hidden" value="{{$area['id']}}" id="id{{$area['id']}}">
                                         <input type="hidden" value="{{$area['nombre']}}" id="nombre{{$area['id']}}">
                                         <input type="hidden" value="{{$area['project_id']}}" id="project_id{{$area['id']}}">
-                                        <input type="hidden" value="{{$area['activo']}}" id="activo{{$area['id']}}">
+                                        <input type="hidden" value="{{$area['activo']}}" id="activo_area{{$area['id']}}">
                                     </tr>
                                 @endforeach
                             </tbody>

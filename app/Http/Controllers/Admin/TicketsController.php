@@ -233,9 +233,9 @@ class TicketsController extends Controller
         date_default_timezone_set('America/Bogota');
         foreach($buscarTicketsU as $value){
             $ticketsUsuario[$cont]['id']                = $value->id;
-            $ticketsUsuario[$cont]['nombres']           = strtoupper($value->nombres);
+            $ticketsUsuario[$cont]['nombres']           = Funciones::eliminar_tildes_texto(strtoupper($value->nombres));
             $ticketsUsuario[$cont]['identificacion']    = $value->identificacion;
-            $ticketsUsuario[$cont]['cargo']             = $value->cargo;
+            $ticketsUsuario[$cont]['cargo']             = Funciones::eliminar_tildes_texto($value->cargo);
 
             $ticketsUsuario[$cont]['id_sede']           = $value->id_sede;
             $idSede = (int)$value->id_sede;

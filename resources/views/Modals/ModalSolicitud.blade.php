@@ -255,3 +255,173 @@
     </div>
 </div>
 
+<div class="modal fade bd-example-modal-xl" id="modal-solicitud-usuario"  tabindex="-1" role="dialog" aria-labelledby="myExtraLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="color: white;background-color: rgba(162, 27, 37, 1);">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">REQUERIMIENTO DE USUARIOS Y/O EQUIPOS</h4>
+            </div>
+            {!! Form::open(['action' => 'Usuario\UsuarioController@crearTicketUsuarioFinal', 'method' => 'post', 'enctype' => 'multipart/form-data','autocomplete'=>'off']) !!}
+            <div class="modal-body">
+                <div class="box-body">
+                    <legend class="subtitle2" style="color: rgba(162, 27, 37, 1);">DATOS USUARIO</legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Nombres y Apellidos</label>
+                                {!! Form::text('nombresT',null,['class'=>'form-control','id'=>'nombresT','required','placeholder'=>'Nombre Completo del usuario',]) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Identificación</label>
+                                {!! Form::text('identificacionT',null,['class'=>'form-control','id'=>'identificacionT','placeholder'=>'Identificación','required']) !!}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Cargo</label>
+                                {!! Form::text('cargoT',null,['class'=>'form-control','id'=>'cargoT','placeholder'=>'Cargo del Usuario','required']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1" class="col-sm-5 control-label">Sede</label>
+                                {!! Form::select('sedeT',$Sedes,null,['class'=>'form-control','id'=>'sedeT','onchange'=>'AreaT();','required']) !!}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Área / Dependencia</label>
+                                {{--  {!! Form::text('area',$Area,['class'=>'form-control','id'=>'area','required','placeholder'=>'Area o Dependencia del usuario']) !!}  --}}
+                                {!! Form::select('areaT',$Areas,null,['class'=>'form-control','id'=>'areaT','required']) !!}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Jefe Inmediato</label>
+                                {!! Form::text('jefeT',null,['class'=>'form-control','id'=>'jefeT','required','placeholder'=>'Nombre del jefe inmediato']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Fecha Ingreso</label>
+                                {!! Form::text('fechaIngresoT',null,['class'=>'form-control','id'=>'fechaIngresoT','required','placeholder'=>'Fecha de Ingreso del Usuario']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Correo Solicitante</label>
+                                {!! Form::text('correoS',null,['class'=>'form-control','id'=>'correoS','required','placeholder'=>'Correo(s) del solicitante']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Cargo Nuevo?</label>
+                                {!! Form::select('cargo_nuevoT',$Opciones,null,['class'=>'form-control','id'=>'cargo_nuevoT','required']) !!}
+                            </div>
+                            <div class="col-md-4">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Funcionario A Reemplazar</label>
+                                {!! Form::text('funcionarioT',null,['class'=>'form-control','id'=>'funcionarioT','placeholder'=>'Nombre del Funcionario a reemplazar']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <legend class="subtitle2" style="color: rgba(162, 27, 37, 1);">DATOS CONFIGURACIÓN PERFIL</legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Servinté?</label>
+                                {!! Form::select('app_85T',$Opciones,null,['class'=>'form-control','id'=>'app_85T']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Dinamica?</label>
+                                {!! Form::select('app_dinamicaT',$Opciones,null,['class'=>'form-control','id'=>'app_dinamicaT']) !!}
+                            </div>
+                            <div class="col-md-5">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Otro Aplicativo</label>
+                                {!! Form::text('otro_aplicativoT',null,['class'=>'form-control','id'=>'otro_aplicativoT','placeholder'=>'Otro(s) apicativo(s)']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <legend class="subtitle2" style="color: rgba(162, 27, 37, 1);">CAPACITACIÓN</legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Capacitación Servinté?</label>
+                                {!! Form::select('cap_85T',$Opciones,null,['class'=>'form-control','id'=>'cap_85T']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Capacitación Dinamica?</label>
+                                {!! Form::select('cap_dinamicaT',$Opciones,null,['class'=>'form-control','id'=>'cap_dinamicaT']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <legend class="subtitle2" style="color: rgba(162, 27, 37, 1);">SOLICITUD DE ADECUACIÓN PUESTO DE TRABAJO</legend>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Equipo de Computo</label>
+                                {!! Form::select('equipo_computoT',$Equipo,null,['class'=>'form-control','id'=>'equipo_computoT']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Correo Electrónico?</label>
+                                {!! Form::select('correo_electronicoT',$Opciones,null,['class'=>'form-control','id'=>'correo_electronicoT']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Celular Corporativo?</label>
+                                {!! Form::select('celularT',$Opciones,null,['class'=>'form-control','id'=>'celularT']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Datos?</label>
+                                {!! Form::select('datosT',$Opciones,null,['class'=>'form-control','id'=>'datosT']) !!}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Minutos?</label>
+                                {!! Form::select('minutosT',$Opciones,null,['class'=>'form-control','id'=>'minutosT']) !!}
+                            </div>
+                            <div class="col-md-3">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Extensión Telefónica?</label>
+                                {!! Form::select('extension_telT',$Opciones,null,['class'=>'form-control','id'=>'extension_telT']) !!}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="exampleInputEmail1" class="col-sm-12 control-label">Observaciones de la Solicitud</label>
+                                {!! Form::textarea('observacionesT',null,['class'=>'form-control','id'=>'observacionesT','placeholder'=>'Ingrese la observación sobre la solicitud','rows'=>'2']) !!}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-success">Crear Ticket</button>
+            </div>
+            {!!  Form::close() !!}
+        </div>
+    </div>
+</div>
+    <script>
+        function AreaT() {
+            var selectBox = document.getElementById("sedeT");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+            var tipo = 'post';
+            var select = document.getElementById("areaT");
+
+            $.ajax({
+                url: "{{route('buscarArea')}}",
+                type: "get",
+                data: {_method: tipo, id_sede: selectedValue},
+                success: function (data) {
+                    var vValido = data['valido'];
+
+                    if (vValido === 'true') {
+                        var ListUsuario = data['Usuario'];
+                        select.options.length = 0;
+                        for (index in ListUsuario) {
+                            select.options[select.options.length] = new Option(ListUsuario[index], index);
+                        }
+
+                    }
+
+                }
+            });
+        }
+    </script>
+

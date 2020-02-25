@@ -175,6 +175,14 @@ return array(
         'tipo_usuario'          =>  'Tipo de Usuario',
         'tipo_usuario_upd'      =>  'Tipo de Usuario',
         'nombre_area'           =>  'Nombre de Área',
-        'nombre_area_upd'       =>  'Nombre de Área'
+        'nombre_area_upd'       =>  'Nombre de Área',
+        'nombresT'              => 'Nombres y Apellidos',
+        'identificacionT'       => 'Identificacion',
+        'cargoT'                => 'Cargo',
+        'sedeT'                 => 'Sede',
+        'jefeT'                 => 'Jefe Inmediato',
+        'areaT'                 => 'Area',
+        'fechaIngresoT'         => 'Fecha Ingreso',
+        'cargo_nuevoT'          => 'CArgo nuevo'
     ),
 );
