@@ -62,11 +62,12 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <label for="exampleInputEmail1" class="col-sm-5 control-label">Sede</label>
-                                    {!! Form::select('id_sede_upd',$NombreSede,null,['class'=>'form-control','id'=>'mod_id_sede','readonly']) !!}
+                                    {!! Form::select('id_sede_upd',$NombreSede,null,['class'=>'form-control','id'=>'mod_id_sede','onchange'=>'AreaUpd();','required']) !!}
                                 </div>
                                 <div class="col-md-5">
                                     <label for="exampleInputEmail1" class="col-sm-5 control-label">Área</label>
-                                    {!! Form::text('dependencia_upd',$Dependencia,['class'=>'form-control','id'=>'mod_dependencia','readonly']) !!}
+                                    {{--  {!! Form::text('dependencia_upd',$Dependencia,['class'=>'form-control','id'=>'mod_dependencia','required']) !!}  --}}
+                                    {!! Form::select('dependencia_upd',$Areas,null,['class'=>'form-control','id'=>'dependencia_upd','required']) !!}
                                 </div>
                                 <div class="col-md-3">
                                     <label for="exampleInputEmail1" class="col-sm-5 control-label">Prioridad</label>
@@ -182,4 +183,31 @@
             });
         }
 
+    </script>
+    <script>
+        function AreaUpd() {
+            var selectBox = document.getElementById("mod_id_sede");
+            var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+            var tipo = 'post';
+            var select = document.getElementById("dependencia_upd");
+
+            $.ajax({
+                url: "{{route('buscarArea')}}",
+                type: "get",
+                data: {_method: tipo, id_sede: selectedValue},
+                success: function (data) {
+                    var vValido = data['valido'];
+
+                    if (vValido === 'true') {
+                        var ListUsuario = data['Usuario'];
+                        select.options.length = 0;
+                        for (index in ListUsuario) {
+                            select.options[select.options.length] = new Option(ListUsuario[index], index);
+                        }
+
+                    }
+
+                }
+            });
+        }
     </script>

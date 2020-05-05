@@ -234,7 +234,11 @@ class TicketsController extends Controller{
             $TelefonoUsuario    = $request->telefono_usuario_upd;
             $CorreUsuario       = Funciones::editar_correo($request->correo_usuario_upd);
             $IdSede             = (int)$request->id_sede_upd;
-            $IdArea             = $request->dependencia_upd;
+            $IdArea             = (int)$request->dependencia_upd;
+            $BuscarArea         = Sedes::BuscarAreaId($IdArea);
+            foreach($BuscarArea as $row){
+                $Area           = $row->name;
+            }
             $Prioridad          = (int)$request->id_prioridad_upd;
             $Categoria          = (int)$request->id_categoriaupd;
             $AsignadoA          = (int)$request->id_usuarioupd;
@@ -262,7 +266,7 @@ class TicketsController extends Controller{
             }
 
             $actualizarTicket   = Tickets::ActualizarTicket($idTicket,$idTipo,$Asunto,$Descripcion,$NombreUsuario,$TelefonoUsuario,$CorreUsuario,
-                                                            $IdSede,$IdArea,$Prioridad,$Categoria,$AsignadoA,$Estado,$creadoPor,$comentario);
+                                                            $IdSede,$Area,$Prioridad,$Categoria,$AsignadoA,$Estado,$creadoPor,$comentario);
             if($actualizarTicket){
 
                 $destinationPath = null;
@@ -397,7 +401,7 @@ class TicketsController extends Controller{
 
         $Estado  = Tickets::ListarEstadoUpd();
         $NombreEstado = array();
-        $NombreEstado[0] = 'Seleccione: ';
+        // $NombreEstado[0] = 'Seleccione: ';
         foreach ($Estado as $row){
             $NombreEstado[$row->id] = $row->name;
         }
@@ -427,7 +431,11 @@ class TicketsController extends Controller{
             $idUsuarioC     = $request->id_creado;
             $idUsuarioA     = $request->id_asignado;
             $idPrioridad    = $request->id_prioridad;
-            $idEstado       = $request->id_estado;
+            if ($request->id_estado != null){
+                $idEstado = implode(',', $request->id_estado);
+            }else{
+                $idEstado = null;
+            }
             $idZona         = $request->id_zona;
             $idSede         = $request->id_sede;
             $idArea         = $request->id_area;

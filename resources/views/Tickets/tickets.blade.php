@@ -44,7 +44,7 @@ Tickets
                                     <th style="text-align: center;">Prioridad</th>
                                     <th style="text-align: center;">Estado</th>
                                     <th style="text-align: center;">Fecha Creación</th>
-                                    <th style="text-align: center;">Creador</th>
+                                    <th style="text-align: center;">Creado Por</th>
                                     <th style="text-align: center;">Asignado A</th>
                                     <th style="text-align: center;">Fecha Actualización</th>
                                     <th style="text-align: center;">Editar</th>

@@ -78,8 +78,16 @@ class UsuarioController extends Controller
             $ListadoTickets[$cont]['user_id']      = (int)$value->user_id;
             $ListadoTickets[$cont]['asigned_id']   = (int)$value->asigned_id;
             $ListadoTickets[$cont]['session_id']   = (int)$value->session_id;
-            $idAsignador    =  (int)$value->user_id;
+            // $idAsignador    =  (int)$value->user_id;
             $idAsignado     =  (int)$value->asigned_id;
+            $BuscarTicketAsignado = Tickets::BuscarAsignador($id_ticket);
+            if($BuscarTicketAsignado){
+                foreach($BuscarTicketAsignado as $valorB){
+                    $idAsignador = (int)$valorB->user_id;
+                }
+            }else{
+                $idAsignador    =  (int)$value->user_id;
+            }
             $Asignador  = Usuarios::BuscarNombre($idAsignador);
             $Asignado   = Usuarios::BuscarNombre($idAsignado);
             if($Asignador){
